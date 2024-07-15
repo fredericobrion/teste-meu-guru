@@ -23,6 +23,20 @@ const userToReturn: UserToReturnDto = {
   updatedAt: new Date(),
 };
 
+const secondUser: UserToReturnDto = {
+  id: 2,
+  email: 'joao@gmail.comm',
+  name: 'joao',
+  phone: '(11) 9955-8899',
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const usersInDb = [
+  { ...userToReturn, password: userDto.password },
+  { ...secondUser, password: userDto.password },
+];
+
 const usersList = [
   { ...userToReturn },
   {
@@ -35,4 +49,4 @@ const usersList = [
   },
 ];
 
-export { userDto, createdUser, userToReturn, usersList };
+export { userDto, createdUser, userToReturn, usersList, usersInDb };

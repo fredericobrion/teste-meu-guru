@@ -39,8 +39,21 @@ export class UserService {
     return userToReturn;
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll() {
+    const users = await this.prisma.user.findMany();
+
+    const usersToReturn = users.map((user) => {
+      const userToReturn = new UserToReturnDto();
+      userToReturn.id = user.id;
+      userToReturn.email = user.email;
+      userToReturn.name = user.name;
+      userToReturn.phone = user.phone;
+      userToReturn.createdAt = user.createdAt;
+      userToReturn.updatedAt = user.updatedAt;
+      return userToReturn;
+    });
+
+    return usersToReturn;
   }
 
   findOne(id: number) {
