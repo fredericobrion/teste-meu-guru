@@ -1,8 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from 'src/module/prisma/prisma.service';
-import { CreatedUserDto } from './dto/created-user.dto';
+import { PrismaService } from '../module/prisma/prisma.service';
+import { UserToReturnDto } from './dto/created-user.dto';
 
 @Injectable()
 export class UserService {
@@ -28,7 +28,7 @@ export class UserService {
       },
     });
 
-    const userToReturn = new CreatedUserDto();
+    const userToReturn = new UserToReturnDto();
     userToReturn.id = createdUser.id;
     userToReturn.email = createdUser.email;
     userToReturn.name = createdUser.name;

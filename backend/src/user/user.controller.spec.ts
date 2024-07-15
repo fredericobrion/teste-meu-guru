@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { BadRequestException } from '@nestjs/common';
-import { userDto, createdUser } from './mocks';
+import { userDto, createdUser, userToReturn } from './mocks';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -30,11 +30,11 @@ describe('UserController', () => {
   });
 
   it('should create a new user', async () => {
-    jest.spyOn(service, 'create').mockResolvedValue(createdUser);
+    jest.spyOn(service, 'create').mockResolvedValue(userToReturn);
 
     const result = await controller.create(userDto);
 
-    expect(result).toEqual(createdUser);
+    expect(result).toEqual(userToReturn);
   });
 
   it('should throw an error if email already exists', async () => {

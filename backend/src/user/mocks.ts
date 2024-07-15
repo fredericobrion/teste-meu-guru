@@ -1,4 +1,4 @@
-import { CreatedUserDto } from './dto/created-user.dto';
+import { UserToReturnDto } from './dto/created-user.dto';
 
 const userDto = {
   email: 'teste@email.com',
@@ -7,7 +7,14 @@ const userDto = {
   phone: '(32) 99167-4479',
 };
 
-const createdUser: CreatedUserDto = {
+const createdUser = {
+  id: 1,
+  ...userDto,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+};
+
+const userToReturn: UserToReturnDto = {
   id: 1,
   email: userDto.email,
   name: userDto.name,
@@ -16,4 +23,4 @@ const createdUser: CreatedUserDto = {
   updatedAt: new Date(),
 };
 
-export { userDto, createdUser };
+export { userDto, createdUser, userToReturn };
