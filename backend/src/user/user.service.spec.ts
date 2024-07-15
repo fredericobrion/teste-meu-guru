@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { PrismaService } from '../module/prisma/prisma.service';
 import { BadRequestException } from '@nestjs/common';
-import { userDto, createdUser, userToReturn } from './mocks';
+import { userDto, createdUser, userToReturn, usersList } from './mocks';
 
 describe('UserService', () => {
   let service: UserService;
@@ -40,5 +40,13 @@ describe('UserService', () => {
     });
 
     await expect(service.create(userDto)).rejects.toThrow(BadRequestException);
+  });
+
+  it('should return all users', async () => {
+    jest.spyOn(prismaService.user, 'findMany').mockResolvedValue(usersList);
+
+    const result = await service.findAll();
+
+    expect(result).toEqual(usersList);
   });
 });

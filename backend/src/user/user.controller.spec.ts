@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { BadRequestException } from '@nestjs/common';
-import { userDto, createdUser, userToReturn } from './mocks';
+import { userDto, userToReturn, usersList } from './mocks';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -42,8 +42,6 @@ describe('UserController', () => {
       .spyOn(service, 'create')
       .mockRejectedValue(new BadRequestException('User already exists'));
 
-    // await expect(service.create(userDto)).rejects.toThrow(BadRequestException);
-
     try {
       await controller.create(userDto);
     } catch (error) {
@@ -52,5 +50,13 @@ describe('UserController', () => {
         expect(error.getStatus()).toBe(400);
       }
     }
+  });
+
+  it('should return all users', async () => {
+    jest.spyOn(service, 'findAll').mockResolvedValue(usersList);
+
+    const result = await controller.findAll();
+
+    expect(result).toEqual(usersList);
   });
 });
