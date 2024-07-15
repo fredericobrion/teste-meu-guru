@@ -1,4 +1,4 @@
-import { User } from '@prisma/client';
+import { CreatedUserDto } from './dto/created-user.dto';
 
 const userDto = {
   email: 'teste@email.com',
@@ -7,9 +7,11 @@ const userDto = {
   phone: '(32) 99167-4479',
 };
 
-const createdUser: User = {
+const createdUser: CreatedUserDto = {
   id: 1,
-  ...userDto,
+  email: userDto.email,
+  name: userDto.name,
+  phone: userDto.phone,
   createdAt: new Date(),
   updatedAt: new Date(),
 };
