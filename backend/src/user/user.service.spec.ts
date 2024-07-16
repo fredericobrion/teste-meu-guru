@@ -66,7 +66,7 @@ describe('UserService', () => {
     });
   });
 
-  it('should delete a user by Id', async () => {
+  it('should delete a user by ID', async () => {
     const userId = 1;
     jest
       .spyOn(prismaService.user, 'findUnique')
@@ -78,10 +78,41 @@ describe('UserService', () => {
     expect(result).toEqual({ message: 'User deleted' });
   });
 
-  it('should throw an error if user dows not exist', async () => {
+  it('should throw an error if user does not exist for delete', async () => {
     const userId = 999;
     jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
 
     await expect(service.remove(userId)).rejects.toThrow(NotFoundException);
+  });
+
+  it('should update a user by ID', async () => {
+    const userId = 1;
+    const updateUserDto = { name: 'new name' };
+    const updatedUser = {
+      ...usersList[0],
+      ...updateUserDto,
+    };
+
+    jest
+      .spyOn(prismaService.user, 'findUnique')
+      .mockResolvedValue(usersInDb[0]);
+    jest
+      .spyOn(prismaService.user, 'update')
+      .mockResolvedValue({ ...updatedUser, password: '123456' });
+
+    const result = await service.update(userId, updateUserDto);
+
+    expect(result).toEqual(updatedUser);
+  });
+
+  it('should throw an error if user does not exist for update', async () => {
+    const userId = 999;
+    const updateUserDto = { name: 'new name' };
+
+    jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+
+    await expect(service.update(userId, updateUserDto)).rejects.toThrow(
+      NotFoundException,
+    );
   });
 });

@@ -18,6 +18,7 @@ describe('UserController', () => {
             create: jest.fn(),
             findAll: jest.fn(),
             remove: jest.fn(),
+            update: jest.fn(),
           },
         },
       ],
@@ -73,7 +74,7 @@ describe('UserController', () => {
     expect(result).toEqual(paginatedUsers);
   });
 
-  it('should delete a user by Id', async () => {
+  it('should delete a user by ID', async () => {
     const userId = '1';
     const expectedResponse = { message: 'User deleted' };
 
@@ -85,7 +86,7 @@ describe('UserController', () => {
     expect(service.remove).toHaveBeenCalledWith(1);
   });
 
-  it('should throw an error if user dows not exist', async () => {
+  it('should throw an error if user does not exist for delete', async () => {
     const userId = '999';
     jest
       .spyOn(service, 'remove')
@@ -95,6 +96,42 @@ describe('UserController', () => {
 
     try {
       await controller.remove(userId);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        expect(error.message).toBe(`User with ID ${userId} not found`);
+        expect(error.getStatus()).toBe(404);
+      }
+    }
+  });
+
+  it('should update a user by ID', async () => {
+    const userId = '1';
+    const updateUserDto = { name: 'new name' };
+    const updatedUser = {
+      ...usersList[0],
+      ...updateUserDto,
+    };
+
+    jest.spyOn(service, 'update').mockResolvedValue(updatedUser);
+
+    const result = await controller.update(userId, updateUserDto);
+
+    expect(result).toEqual(updatedUser);
+    expect(service.update).toHaveBeenCalledWith(1, updateUserDto);
+  });
+
+  it('should throw an error if user does not exist for update', async () => {
+    const userId = '999';
+    const updateUserDto = { name: 'new name' };
+
+    jest
+      .spyOn(service, 'update')
+      .mockRejectedValue(
+        new NotFoundException(`User with ID ${userId} not found`),
+      );
+
+    try {
+      await controller.update(userId, updateUserDto);
     } catch (error) {
       if (error instanceof NotFoundException) {
         expect(error.message).toBe(`User with ID ${userId} not found`);
