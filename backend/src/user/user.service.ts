@@ -7,6 +7,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../module/prisma/prisma.service';
 import { UserToReturnDto } from './dto/created-user.dto';
+import * as bcrypt from 'bcrypt';
+
+const SALT_ROUNDS = process.env.BCRYPT_SALT_ROUNDS || 10;
 
 @Injectable()
 export class UserService {
@@ -23,10 +26,12 @@ export class UserService {
       throw new BadRequestException('User already exists');
     }
 
+    const encryptedPassword = await bcrypt.hash(password, +SALT_ROUNDS);
+
     const createdUser = await this.prisma.user.create({
       data: {
         email,
-        password,
+        password: encryptedPassword,
         name,
         phone,
       },
