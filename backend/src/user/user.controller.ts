@@ -8,16 +8,20 @@ import {
   Delete,
   BadRequestException,
   Query,
+  UsePipes,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { ZodValidationPipe } from './zod-validation.pipe';
+import { createUserSchema } from './validation.schema';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
+  @UsePipes(new ZodValidationPipe(createUserSchema))
   async create(@Body() createUserDto: CreateUserDto) {
     try {
       return this.userService.create(createUserDto);
