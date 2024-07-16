@@ -1,6 +1,6 @@
 import { UserToReturnDto } from './dto/created-user.dto';
 
-const userDto = {
+const userToCreateDto = {
   email: 'ana@email.com',
   password: '123456',
   name: 'ana',
@@ -9,16 +9,16 @@ const userDto = {
 
 const createdUser = {
   id: 1,
-  ...userDto,
+  ...userToCreateDto,
   createdAt: new Date(),
   updatedAt: new Date(),
 };
 
 const userToReturn: UserToReturnDto = {
   id: 1,
-  email: userDto.email,
-  name: userDto.name,
-  phone: userDto.phone,
+  email: userToCreateDto.email,
+  name: userToCreateDto.name,
+  phone: userToCreateDto.phone,
   createdAt: new Date(),
   updatedAt: new Date(),
 };
@@ -33,8 +33,8 @@ const secondUser: UserToReturnDto = {
 };
 
 const usersInDb = [
-  { ...userToReturn, password: userDto.password },
-  { ...secondUser, password: userDto.password },
+  { ...userToReturn, password: userToCreateDto.password },
+  { ...secondUser, password: userToCreateDto.password },
 ];
 
 const usersList = [
@@ -49,4 +49,4 @@ const usersList = [
   },
 ];
 
-export { userDto, createdUser, userToReturn, usersList, usersInDb };
+export { userToCreateDto, createdUser, userToReturn, usersList, usersInDb };

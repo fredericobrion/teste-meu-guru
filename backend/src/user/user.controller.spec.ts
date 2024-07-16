@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { userDto, userToReturn, usersList } from './mocks';
+import { userToCreateDto, userToReturn, usersList } from './mocks';
 
 describe('UserController', () => {
   let controller: UserController;
@@ -35,7 +35,7 @@ describe('UserController', () => {
   it('should create a new user', async () => {
     jest.spyOn(service, 'create').mockResolvedValue(userToReturn);
 
-    const result = await controller.create(userDto);
+    const result = await controller.create(userToCreateDto);
 
     expect(result).toEqual(userToReturn);
   });
@@ -46,12 +46,26 @@ describe('UserController', () => {
       .mockRejectedValue(new BadRequestException('User already exists'));
 
     try {
-      await controller.create(userDto);
+      await controller.create(userToCreateDto);
     } catch (error) {
       if (error instanceof BadRequestException) {
         expect(error.message).toBe('User already exists');
         expect(error.getStatus()).toBe(400);
       }
+    }
+  });
+
+  it('should throw an error for invalid email', async () => {
+    const invalidUser = {
+      ...userToCreateDto,
+      email: 'invalid-email.com',
+    };
+
+    try {
+      await controller.create(invalidUser);
+    } catch (error) {
+      expect(error).toBeInstanceOf(BadRequestException);
+      expect(error.message).toContain('Invalid email address');
     }
   });
 

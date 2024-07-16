@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { PrismaService } from '../module/prisma/prisma.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
-  userDto,
+  userToCreateDto,
   createdUser,
   userToReturn,
   usersList,
@@ -30,7 +30,7 @@ describe('UserService', () => {
   it('should create a new user', async () => {
     jest.spyOn(prismaService.user, 'create').mockResolvedValue(createdUser);
 
-    const result = await service.create(userDto);
+    const result = await service.create(userToCreateDto);
 
     prismaService.user.create = jest.fn().mockResolvedValue(createdUser);
 
@@ -39,13 +39,26 @@ describe('UserService', () => {
 
   it('should throw an error if email already exists', async () => {
     jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue({
-      ...userDto,
+      ...userToCreateDto,
       id: 1,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
 
-    await expect(service.create(userDto)).rejects.toThrow(BadRequestException);
+    await expect(service.create(userToCreateDto)).rejects.toThrow(
+      BadRequestException,
+    );
+  });
+
+  it('should throw an error for invalid email', async () => {
+    const invalidUser = {
+      ...userToCreateDto,
+      email: 'invalid-email.com',
+    };
+
+    await expect(service.create(invalidUser)).rejects.toThrow(
+      BadRequestException,
+    );
   });
 
   it('should return a paginated and filtered list of users', async () => {
