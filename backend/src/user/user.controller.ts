@@ -9,14 +9,17 @@ import {
   BadRequestException,
   Query,
   UsePipes,
+  UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ZodValidationPipe } from './zod-validation.pipe';
 import { createUserSchema } from './validation.schema';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @Controller('user')
+@UseGuards(ThrottlerGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
