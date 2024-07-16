@@ -53,11 +53,22 @@ describe('UserController', () => {
     }
   });
 
-  it('should return all users', async () => {
-    jest.spyOn(service, 'findAll').mockResolvedValue(usersList);
+  it('should return a paginated and filtered list of users', async () => {
+    const page = 1;
+    const limit = 2;
+    const filter = 'teste';
 
-    const result = await controller.findAll();
+    const paginatedUsers = {
+      total: usersList.length,
+      page,
+      limit,
+      data: usersList,
+    };
 
-    expect(result).toEqual(usersList);
+    jest.spyOn(service, 'findAll').mockResolvedValue(paginatedUsers);
+
+    const result = await controller.findAll(page, limit, filter);
+
+    expect(result).toEqual(paginatedUsers);
   });
 });

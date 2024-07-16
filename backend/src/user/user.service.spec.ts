@@ -48,11 +48,21 @@ describe('UserService', () => {
     await expect(service.create(userDto)).rejects.toThrow(BadRequestException);
   });
 
-  it('should return all users', async () => {
+  it('should return a paginated and filtered list of users', async () => {
+    const page = 1;
+    const limit = 2;
+    const filter = 'teste';
+
     jest.spyOn(prismaService.user, 'findMany').mockResolvedValue(usersInDb);
+    jest.spyOn(prismaService.user, 'count').mockResolvedValue(usersList.length);
 
-    const result = await service.findAll();
+    const result = await service.findAll(page, limit, filter);
 
-    expect(result).toEqual(usersList);
+    expect(result).toEqual({
+      total: usersList.length,
+      page,
+      limit,
+      data: usersList,
+    });
   });
 });
