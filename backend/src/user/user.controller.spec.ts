@@ -54,14 +54,14 @@ describe('UserController', () => {
   });
 
   it('should return a paginated and filtered list of users', async () => {
-    const page = 1;
-    const limit = 2;
+    const page = '1';
+    const limit = '2';
     const filter = 'teste';
 
     const paginatedUsers = {
       total: usersList.length,
-      page,
-      limit,
+      page: Number(page),
+      limit: Number(limit),
       data: usersList,
     };
 

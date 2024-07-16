@@ -39,8 +39,14 @@ export class UserService {
     return userToReturn;
   }
 
-  async findAll() {
-    const users = await this.prisma.user.findMany();
+  async findAll(page: number, limit: number, filter: string) {
+    const skip = (page - 1) * limit;
+    const where = filter
+      ? {
+          OR: [{ name: { contains: filter } }, { email: { contains: filter } }],
+        }
+      : {};
+    const users = await this.prisma.user.findMany({ where, skip, take: limit });
 
     const usersToReturn = users.map((user) => {
       const userToReturn = new UserToReturnDto();
@@ -53,7 +59,9 @@ export class UserService {
       return userToReturn;
     });
 
-    return usersToReturn;
+    const totalUsers = await this.prisma.user.count({ where });
+
+    return { total: totalUsers, page, limit, data: usersToReturn };
   }
 
   findOne(id: number) {
