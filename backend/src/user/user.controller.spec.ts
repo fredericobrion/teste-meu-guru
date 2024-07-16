@@ -55,7 +55,7 @@ describe('UserController', () => {
     }
   });
 
-  it('should throw an error for invalid email', async () => {
+  it('should throw an error for invalid email when creating user', async () => {
     const invalidUser = {
       ...userToCreateDto,
       email: 'invalid-email.com',
@@ -151,6 +151,20 @@ describe('UserController', () => {
         expect(error.message).toBe(`User with ID ${userId} not found`);
         expect(error.getStatus()).toBe(404);
       }
+    }
+  });
+
+  it('should throw an error for invalid email when updating user', async () => {
+    const userId = '999';
+    const invalidUser = {
+      email: 'invalid-email.com',
+    };
+
+    try {
+      await controller.update(userId, invalidUser);
+    } catch (error) {
+      expect(error).toBeInstanceOf(BadRequestException);
+      expect(error.message).toContain('Invalid email address');
     }
   });
 });

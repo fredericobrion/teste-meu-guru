@@ -50,7 +50,7 @@ describe('UserService', () => {
     );
   });
 
-  it('should throw an error for invalid email', async () => {
+  it('should throw an error for invalid email when creating user', async () => {
     const invalidUser = {
       ...userToCreateDto,
       email: 'invalid-email.com',
@@ -126,6 +126,17 @@ describe('UserService', () => {
 
     await expect(service.update(userId, updateUserDto)).rejects.toThrow(
       NotFoundException,
+    );
+  });
+
+  it('should throw an error for invalid email when updating user', async () => {
+    const userId = 999;
+    const invalidUser = {
+      email: 'invalid-email.com',
+    };
+
+    await expect(service.update(userId, invalidUser)).rejects.toThrow(
+      BadRequestException,
     );
   });
 });
