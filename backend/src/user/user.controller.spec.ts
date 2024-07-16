@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { userDto, userToReturn, usersList } from './mocks';
 
 describe('UserController', () => {
@@ -17,6 +17,7 @@ describe('UserController', () => {
           useValue: {
             create: jest.fn(),
             findAll: jest.fn(),
+            remove: jest.fn(),
           },
         },
       ],
@@ -70,5 +71,35 @@ describe('UserController', () => {
     const result = await controller.findAll(page, limit, filter);
 
     expect(result).toEqual(paginatedUsers);
+  });
+
+  it('should delete a user by Id', async () => {
+    const userId = '1';
+    const expectedResponse = { message: 'User deleted' };
+
+    jest.spyOn(service, 'remove').mockResolvedValue(expectedResponse);
+
+    const result = await controller.remove(userId);
+
+    expect(result).toEqual(expectedResponse);
+    expect(service.remove).toHaveBeenCalledWith(1);
+  });
+
+  it('should throw an error if user dows not exist', async () => {
+    const userId = '999';
+    jest
+      .spyOn(service, 'remove')
+      .mockRejectedValue(
+        new NotFoundException(`User with ID ${userId} not found`),
+      );
+
+    try {
+      await controller.remove(userId);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        expect(error.message).toBe(`User with ID ${userId} not found`);
+        expect(error.getStatus()).toBe(404);
+      }
+    }
   });
 });

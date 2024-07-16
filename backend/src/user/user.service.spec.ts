@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
 import { PrismaService } from '../module/prisma/prisma.service';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   userDto,
   createdUser,
@@ -64,5 +64,24 @@ describe('UserService', () => {
       limit,
       data: usersList,
     });
+  });
+
+  it('should delete a user by Id', async () => {
+    const userId = 1;
+    jest
+      .spyOn(prismaService.user, 'findUnique')
+      .mockResolvedValue(usersInDb[0]);
+    jest.spyOn(prismaService.user, 'delete').mockResolvedValue(usersInDb[0]);
+
+    const result = await service.remove(userId);
+
+    expect(result).toEqual({ message: 'User deleted' });
+  });
+
+  it('should throw an error if user dows not exist', async () => {
+    const userId = 999;
+    jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+
+    await expect(service.remove(userId)).rejects.toThrow(NotFoundException);
   });
 });
