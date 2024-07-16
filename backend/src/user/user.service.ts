@@ -72,8 +72,27 @@ export class UserService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const userInDb = await this.prisma.user.findUnique({ where: { id } });
+
+    if (!userInDb) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id },
+      data: updateUserDto,
+    });
+
+    const userToReturn = new UserToReturnDto();
+    userToReturn.id = updatedUser.id;
+    userToReturn.email = updatedUser.email;
+    userToReturn.name = updatedUser.name;
+    userToReturn.phone = updatedUser.phone;
+    userToReturn.createdAt = updatedUser.createdAt;
+    userToReturn.updatedAt = updatedUser.updatedAt;
+
+    return userToReturn;
   }
 
   async remove(id: number) {
