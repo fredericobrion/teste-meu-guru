@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../module/prisma/prisma.service';
@@ -72,7 +76,15 @@ export class UserService {
     return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    const userInDb = await this.prisma.user.findUnique({ where: { id } });
+
+    if (!userInDb) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    await this.prisma.user.delete({ where: { id } });
+
+    return { message: 'User deleted' };
   }
 }
