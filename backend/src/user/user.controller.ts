@@ -24,7 +24,9 @@ import { AdminGuard } from '../auth/admin.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @UseGuards(AdminGuard)
   @Post()
+  @AdminAuth()
   @UsePipes(new ZodValidationPipe(createUserSchema))
   async create(@Body() createUserDto: CreateUserDto) {
     try {
@@ -54,7 +56,9 @@ export class UserController {
     return this.userService.findOne(+id);
   }
 
+  @UseGuards(AdminGuard)
   @Patch(':id')
+  @AdminAuth()
   // @UsePipes(new ZodValidationPipe(updateUserSchema))
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
