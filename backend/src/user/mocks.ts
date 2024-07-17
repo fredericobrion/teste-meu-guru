@@ -5,11 +5,13 @@ const userToCreateDto = {
   password: '123456',
   name: 'ana',
   phone: '(32) 99167-4479',
+  cpf: '111.222.333-44',
 };
 
 const createdUser = {
   id: 1,
   ...userToCreateDto,
+  admin: false,
   createdAt: new Date(),
   updatedAt: new Date(),
 };
@@ -19,6 +21,8 @@ const userToReturn: UserToReturnDto = {
   email: userToCreateDto.email,
   name: userToCreateDto.name,
   phone: userToCreateDto.phone,
+  cpf: userToCreateDto.cpf,
+  admin: false,
   createdAt: new Date(),
   updatedAt: new Date(),
 };
@@ -28,6 +32,8 @@ const secondUser: UserToReturnDto = {
   email: 'joao@gmail.comm',
   name: 'joao',
   phone: '(11) 9955-8899',
+  cpf: '111.222.333-44',
+  admin: false,
   createdAt: new Date(),
   updatedAt: new Date(),
 };
@@ -44,6 +50,8 @@ const usersList = [
     email: 'joao@gmail.comm',
     name: 'joao',
     phone: '(11) 9955-8899',
+    cpf: '111.222.333-44',
+    admin: false,
     createdAt: new Date(),
     updatedAt: new Date(),
   },

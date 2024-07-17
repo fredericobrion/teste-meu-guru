@@ -16,7 +16,7 @@ export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { email, password, name, phone } = createUserDto;
+    const { email, password, name, phone, cpf } = createUserDto;
 
     const existingUser = await this.prisma.user.findUnique({
       where: { email },
@@ -34,6 +34,7 @@ export class UserService {
         password: encryptedPassword,
         name,
         phone,
+        cpf,
       },
     });
 
@@ -44,6 +45,8 @@ export class UserService {
     userToReturn.phone = createdUser.phone;
     userToReturn.createdAt = createdUser.createdAt;
     userToReturn.updatedAt = createdUser.updatedAt;
+    userToReturn.cpf = createdUser.cpf;
+    userToReturn.admin = createdUser.admin;
 
     return userToReturn;
   }
@@ -65,6 +68,8 @@ export class UserService {
       userToReturn.phone = user.phone;
       userToReturn.createdAt = user.createdAt;
       userToReturn.updatedAt = user.updatedAt;
+      userToReturn.cpf = user.cpf;
+      userToReturn.admin = user.admin;
       return userToReturn;
     });
 
@@ -82,6 +87,16 @@ export class UserService {
 
     if (!userInDb) {
       throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    if (updateUserDto.email && updateUserDto.email !== userInDb.email) {
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email: updateUserDto.email },
+      });
+
+      if (existingUser) {
+        throw new BadRequestException('Email already exists');
+      }
     }
 
     if (updateUserDto.password) {
@@ -103,6 +118,8 @@ export class UserService {
     userToReturn.phone = updatedUser.phone;
     userToReturn.createdAt = updatedUser.createdAt;
     userToReturn.updatedAt = updatedUser.updatedAt;
+    userToReturn.cpf = updatedUser.cpf;
+    userToReturn.admin = updatedUser.admin;
 
     return userToReturn;
   }

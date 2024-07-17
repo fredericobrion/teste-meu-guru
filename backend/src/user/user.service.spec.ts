@@ -27,116 +27,133 @@ describe('UserService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create a new user', async () => {
-    jest.spyOn(prismaService.user, 'create').mockResolvedValue(createdUser);
+  describe('create', () => {
+    it('should create a new user', async () => {
+      jest.spyOn(prismaService.user, 'create').mockResolvedValue(createdUser);
 
-    const result = await service.create(userToCreateDto);
+      const result = await service.create(userToCreateDto);
 
-    prismaService.user.create = jest.fn().mockResolvedValue(createdUser);
-
-    expect(result).toEqual(userToReturn);
-  });
-
-  it('should throw an error if email already exists', async () => {
-    jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue({
-      ...userToCreateDto,
-      id: 1,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      expect(result).toEqual(userToReturn);
     });
 
-    await expect(service.create(userToCreateDto)).rejects.toThrow(
-      BadRequestException,
-    );
-  });
+    it('should throw an error if email already exists', async () => {
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue({
+        ...userToCreateDto,
+        admin: false,
+        id: 1,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
 
-  it('should throw an error for invalid email when creating user', async () => {
-    const invalidUser = {
-      ...userToCreateDto,
-      email: 'invalid-email.com',
-    };
-
-    await expect(service.create(invalidUser)).rejects.toThrow(
-      BadRequestException,
-    );
-  });
-
-  it('should return a paginated and filtered list of users', async () => {
-    const page = 1;
-    const limit = 2;
-    const filter = 'teste';
-
-    jest.spyOn(prismaService.user, 'findMany').mockResolvedValue(usersInDb);
-    jest.spyOn(prismaService.user, 'count').mockResolvedValue(usersList.length);
-
-    const result = await service.findAll(page, limit, filter);
-
-    expect(result).toEqual({
-      total: usersList.length,
-      page,
-      limit,
-      data: usersList,
+      await expect(service.create(userToCreateDto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
-  it('should delete a user by ID', async () => {
-    const userId = 1;
-    jest
-      .spyOn(prismaService.user, 'findUnique')
-      .mockResolvedValue(usersInDb[0]);
-    jest.spyOn(prismaService.user, 'delete').mockResolvedValue(usersInDb[0]);
+  describe('findAll', () => {
+    it('should return a paginated and filtered list of users', async () => {
+      const page = 1;
+      const limit = 2;
+      const filter = 'teste';
 
-    const result = await service.remove(userId);
+      jest.spyOn(prismaService.user, 'findMany').mockResolvedValue(usersInDb);
+      jest
+        .spyOn(prismaService.user, 'count')
+        .mockResolvedValue(usersList.length);
 
-    expect(result).toEqual({ message: 'User deleted' });
+      const result = await service.findAll(page, limit, filter);
+
+      expect(result).toEqual({
+        total: usersList.length,
+        page,
+        limit,
+        data: usersList,
+      });
+    });
   });
 
-  it('should throw an error if user does not exist for delete', async () => {
-    const userId = 999;
-    jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+  describe('remove', () => {
+    it('should delete a user by ID', async () => {
+      const userId = 1;
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(usersInDb[0]);
+      jest.spyOn(prismaService.user, 'delete').mockResolvedValue(usersInDb[0]);
 
-    await expect(service.remove(userId)).rejects.toThrow(NotFoundException);
+      const result = await service.remove(userId);
+
+      expect(result).toEqual({ message: 'User deleted' });
+    });
+
+    it('should throw an error if user does not exist for delete', async () => {
+      const userId = 999;
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+
+      await expect(service.remove(userId)).rejects.toThrow(NotFoundException);
+    });
   });
 
-  it('should update a user by ID', async () => {
-    const userId = 1;
-    const updateUserDto = { name: 'new name' };
-    const updatedUser = {
-      ...usersList[0],
-      ...updateUserDto,
-    };
+  describe('update', () => {
+    it('should update a user by ID', async () => {
+      const userId = 1;
+      const updateUserDto = { name: 'new name' };
+      const updatedUser = {
+        ...usersList[0],
+        ...updateUserDto,
+      };
 
-    jest
-      .spyOn(prismaService.user, 'findUnique')
-      .mockResolvedValue(usersInDb[0]);
-    jest
-      .spyOn(prismaService.user, 'update')
-      .mockResolvedValue({ ...updatedUser, password: '123456' });
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(usersInDb[0]);
+      jest.spyOn(prismaService.user, 'update').mockResolvedValue({
+        ...updatedUser,
+        password: '123456',
+        cpf: '111.222.333-44',
+        admin: false,
+      });
 
-    const result = await service.update(userId, updateUserDto);
+      const result = await service.update(userId, updateUserDto);
 
-    expect(result).toEqual(updatedUser);
-  });
+      expect(result).toEqual(updatedUser);
+    });
 
-  it('should throw an error if user does not exist for update', async () => {
-    const userId = 999;
-    const updateUserDto = { name: 'new name' };
+    it('should throw an error if user does not exist for update', async () => {
+      const userId = 999;
+      const updateUserDto = { name: 'new name' };
 
-    jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
 
-    await expect(service.update(userId, updateUserDto)).rejects.toThrow(
-      NotFoundException,
-    );
-  });
+      await expect(service.update(userId, updateUserDto)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
 
-  it('should throw an error for invalid email when updating user', async () => {
-    const userId = 999;
-    const invalidUser = {
-      email: 'invalid-email.com',
-    };
+    it('should throw an error for invalid email when updating user', async () => {
+      const userId = 999;
+      const invalidUser = {
+        email: 'invalid-email.com',
+      };
 
-    await expect(service.update(userId, invalidUser)).rejects.toThrow(
-      BadRequestException,
-    );
+      await expect(service.update(userId, invalidUser)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should throw an error if email already exists when updating user', async () => {
+      const userId = 999;
+
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValueOnce({
+        ...usersInDb[0],
+      });
+
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValueOnce({
+        ...usersInDb[1],
+      });
+
+      await expect(
+        service.update(userId, { email: usersList[1].email }),
+      ).rejects.toThrow(BadRequestException);
+    });
   });
 });
