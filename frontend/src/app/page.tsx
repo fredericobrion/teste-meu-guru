@@ -1,32 +1,54 @@
 "use client";
 import { FormEvent, useState } from "react";
+import { login } from "../utils/api";
+import { useRouter } from "next/navigation";
+import { setTokenCookie } from "../utils/cookieUtils";
 
 export default function Home() {
+  const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");
+  const [loginError, setLoginError] = useState("");
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    let valid = true;
-
-    setEmailError("");
-    setPasswordError("");
-
+  const validateEmail = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setEmailError("E-mail inválido");
-      valid = false;
+      return false;
     }
+    return true;
+  };
 
+  const validatePassword = () => {
     if (password.length < 6) {
       setPasswordError("A senha deverá ter no mínimo 6 caracteres");
-      valid = false;
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    if (!validateEmail() || !validatePassword()) {
+      return;
     }
 
-    if (valid) {
-      console.log("Form is valid!");
+    try {
+      const token = await login(email, password);
+
+      setTokenCookie(token);
+
+      router.push("/users-list");
+    } catch (error) {
+      if (error.response?.status === 401) {
+        setLoginError("E-mail ou senha incorretos");
+      } else {
+        setLoginError("Erro ao fazer login. Por favor, tente novamente.");
+      }
     }
   };
 
@@ -60,6 +82,7 @@ export default function Home() {
         >
           Entrar
         </button>
+        {loginError && <p className="text-red-600">{loginError}</p>}
       </form>
     </div>
   );
