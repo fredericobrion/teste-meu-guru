@@ -17,7 +17,8 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ZodValidationPipe } from './zod-validation.pipe';
 import { createUserSchema } from './validation.schema';
 import { ThrottlerGuard } from '@nestjs/throttler';
-
+import { AdminAuth } from '../auth/admin-auth.decorator';
+import { AdminGuard } from '../auth/admin.guard';
 @Controller('user')
 @UseGuards(ThrottlerGuard)
 export class UserController {
@@ -59,7 +60,9 @@ export class UserController {
     return this.userService.update(+id, updateUserDto);
   }
 
+  @UseGuards(AdminGuard)
   @Delete(':id')
+  @AdminAuth()
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
   }
