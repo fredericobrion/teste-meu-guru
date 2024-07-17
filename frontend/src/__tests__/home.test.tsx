@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, waitFor } from "@testing-library/react";
 import Home from "../app/page";
 import userEvent from "@testing-library/user-event";
 import { beforeEach } from "node:test";
@@ -18,6 +18,8 @@ describe("Home Page", () => {
   });
 
   it("should show email error message when email is invalid", async () => {
+    render(<Home />);
+
     const emailInput = screen.getByPlaceholderText("E-mail");
     const submitButton = screen.getByRole("button", { name: /entrar/i });
 
@@ -37,12 +39,13 @@ describe("Home Page", () => {
 
     await userEvent.type(emailInput, "test@email.com");
     await userEvent.type(passwordInput, "123");
-    userEvent.click(submitButton);
+    await userEvent.click(submitButton);
 
-    const errorMessage = await screen.findByText(
-      "A senha deverá ter no mínimo 6 caracteres"
-    );
-
-    expect(errorMessage).toBeDefined();
+    await waitFor(() => {
+      const errorMessage = screen.findByText(
+        "A senha deverá ter no mínimo 6 caracteres"
+      );
+      expect(errorMessage).toBeDefined();
+    });
   });
 });
