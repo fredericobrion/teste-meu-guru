@@ -135,4 +135,10 @@ export class UserService {
 
     return { message: 'User deleted' };
   }
+
+  async findByEmail(email: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+
+    return user;
+  }
 }
