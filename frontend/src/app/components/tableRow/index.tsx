@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import { User } from "../../../types/user";
 import { formatCPF, formatPhone } from "../../../utils/formatInputs";
-import { ErrorsInputs } from "../../..//types/errors-inputs";
+import { ErrorsInputs } from "../../../types/errors-inputs";
 import {
   validateCpf,
   validateEmail,
@@ -51,7 +51,6 @@ export default function TableRow({
 
   const handleChangePhone = (e: ChangeEvent<HTMLInputElement>) => {
     setPhone(formatPhone(e.target.value));
-    console.log(validatePhone(e.target.value));
     setErrors({
       ...errors,
       phone: !validatePhone(formatPhone(e.target.value)),
