@@ -135,29 +135,28 @@ export default function UsersListPage() {
         </tbody>
       </table>
       <div className="flex justify-center mt-4">
-        {totalPages > 3 && (
+        {currentPage > 2 && (
           <button
             onClick={() => handlePageChange(1)}
-            className="px-4 py-2 mx-1 rounded-md border bg-purple-500 text-white hover:bg-purple-600"
+            className="px-4 py-2 mx-1 rounded-md border bg-purple-300 text-white hover:bg-purple-600"
           >
-            Primeira
+            <ChevronDoubleLeftIcon className="size-4 text-white hover:text-gray-600 cursor-pointer" />
           </button>
         )}
-        <button
-          onClick={() => handlePageChange(currentPage - 1)}
-          className={`px-4 py-2 mx-1 rounded-md border ${
-            currentPage === 1
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-purple-500 text-white hover:bg-purple-600"
-          }`}
-          disabled={currentPage === 1}
-        >
-          Anterior
-        </button>
+        {currentPage > 1 && (
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            className="px-4 py-2 mx-1 rounded-md border bg-purple-300 text-white hover:bg-purple-600"
+            disabled={currentPage === 1}
+          >
+            <ChevronLeftIcon className="size-4 text-white hover:text-gray-600 cursor-pointer" />
+          </button>
+
+        )}
         {totalPages > 3 && currentPage > 1 && (
           <button
             onClick={() => handlePageChange(currentPage - 1)}
-            className="px-4 py-2 mx-1 rounded-md border bg-purple-500 text-white hover:bg-purple-600"
+            className="px-4 py-2 mx-1 rounded-md border bg-purple-300 text-white hover:bg-purple-600"
           >
             {currentPage - 1}
           </button>
@@ -171,28 +170,28 @@ export default function UsersListPage() {
         {totalPages > 3 && currentPage < totalPages && (
           <button
             onClick={() => handlePageChange(currentPage + 1)}
-            className="px-4 py-2 mx-1 rounded-md border bg-purple-500 text-white hover:bg-purple-600"
+            className="px-4 py-2 mx-1 rounded-md border bg-purple-300 text-white hover:bg-purple-600"
           >
             {currentPage + 1}
           </button>
         )}
+        {currentPage < totalPages && (
         <button
           onClick={() => handlePageChange(currentPage + 1)}
-          className={`px-4 py-2 mx-1 rounded-md border ${
-            currentPage === totalPages
-              ? "bg-gray-300 cursor-not-allowed"
-              : "bg-purple-500 text-white hover:bg-purple-600"
-          }`}
+          className="px-4 py-2 mx-1 rounded-md border bg-purple-300 text-white hover:bg-purple-600"
           disabled={currentPage === totalPages}
         >
-          Próxima
+          <ChevronRightIcon className="size-4 text-white hover:text-gray-600 cursor-pointer" />
+
         </button>
-        {totalPages > 3 && (
+
+        )}
+        {(currentPage + 1 < totalPages) && (
           <button
             onClick={() => handlePageChange(totalPages)}
-            className="px-4 py-2 mx-1 rounded-md border bg-purple-500 text-white hover:bg-purple-600"
+            className="px-4 py-2 mx-1 rounded-md border bg-purple-300 text-white hover:bg-purple-600"
           >
-            Última
+            <ChevronDoubleRightIcon className="size-4 text-white hover:text-gray-600 cursor-pointer" />
           </button>
         )}
       </div>
