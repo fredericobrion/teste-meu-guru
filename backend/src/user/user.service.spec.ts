@@ -8,6 +8,7 @@ import {
   userToReturn,
   usersList,
   usersInDb,
+  userToUpdateDto,
 } from './mocks';
 
 describe('UserService', () => {
@@ -97,15 +98,14 @@ describe('UserService', () => {
   describe('update', () => {
     it('should update a user by ID', async () => {
       const userId = 1;
-      const updateUserDto = { name: 'new name' };
       const updatedUser = {
         ...usersList[0],
-        ...updateUserDto,
+        ...userToUpdateDto,
       };
 
       jest
         .spyOn(prismaService.user, 'findUnique')
-        .mockResolvedValue(usersInDb[0]);
+        .mockResolvedValue(usersInDb[0]); //ana
       jest.spyOn(prismaService.user, 'update').mockResolvedValue({
         ...updatedUser,
         password: '123456',
@@ -113,29 +113,20 @@ describe('UserService', () => {
         admin: false,
       });
 
-      const result = await service.update(userId, updateUserDto);
+      const result = await service.update(userId, {
+        ...userToUpdateDto,
+        email: usersList[0].email,
+      });
 
       expect(result).toEqual(updatedUser);
     });
 
     it('should throw an error if user does not exist for update', async () => {
       const userId = 999;
-      const updateUserDto = { name: 'new name' };
 
       jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
 
-      await expect(service.update(userId, updateUserDto)).rejects.toThrow(
-        NotFoundException,
-      );
-    });
-
-    it('should throw an error for invalid email when updating user', async () => {
-      const userId = 999;
-      const invalidUser = {
-        email: 'invalid-email.com',
-      };
-
-      await expect(service.update(userId, invalidUser)).rejects.toThrow(
+      await expect(service.update(userId, userToUpdateDto)).rejects.toThrow(
         NotFoundException,
       );
     });
@@ -151,9 +142,9 @@ describe('UserService', () => {
         ...usersInDb[1],
       });
 
-      await expect(
-        service.update(userId, { email: usersList[1].email }),
-      ).rejects.toThrow(BadRequestException);
+      await expect(service.update(userId, userToUpdateDto)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 });

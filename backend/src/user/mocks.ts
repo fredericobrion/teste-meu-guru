@@ -8,6 +8,13 @@ const userToCreateDto = {
   cpf: '111.222.333-44',
 };
 
+const userToUpdateDto = {
+  email: 'maria@email.com',
+  name: 'maria',
+  phone: '(32) 99167-4479',
+  cpf: '111.222.333-44',
+};
+
 const createdUser = {
   id: 1,
   ...userToCreateDto,
@@ -57,4 +64,11 @@ const usersList = [
   },
 ];
 
-export { userToCreateDto, createdUser, userToReturn, usersList, usersInDb };
+export {
+  userToCreateDto,
+  createdUser,
+  userToReturn,
+  usersList,
+  usersInDb,
+  userToUpdateDto,
+};
