@@ -15,7 +15,7 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ZodValidationPipe } from './zod-validation.pipe';
-import { createUserSchema } from './validation.schema';
+import { createUserSchema, updateUserSchema } from './validation.schema';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { AdminAuth } from '../auth/admin-auth.decorator';
 import { AdminGuard } from '../auth/admin.guard';
@@ -59,7 +59,7 @@ export class UserController {
   @UseGuards(AdminGuard)
   @Patch(':id')
   @AdminAuth()
-  // @UsePipes(new ZodValidationPipe(updateUserSchema))
+  @UsePipes(new ZodValidationPipe(updateUserSchema))
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
   }
