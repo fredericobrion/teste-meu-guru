@@ -53,3 +53,29 @@ export const fetchUserData = async () => {
     throw new Error("Erro ao buscar dados do usuário");
   }
 };
+
+export const createUser = async (
+  name: string,
+  email: string,
+  password: string,
+  cpf: string,
+  phone: string,
+  isAdmin: boolean
+) => {
+  try {
+    const response = await axiosInstance.post("/user", {
+      name,
+      email,
+      password,
+      cpf,
+      phone,
+      isAdmin,
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response.status) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Erro no servidor");
+  }
+};

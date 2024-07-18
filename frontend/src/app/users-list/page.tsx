@@ -50,7 +50,7 @@ export default function UsersListPage() {
         </thead>
         <tbody>
           {usersData.map((user) => (
-            <TableRow key={user.id} user={user} usersData={usersData} setUsersData={setUsersData}/>
+            <TableRow key={user.id} user={user} usersData={usersData} setUsersData={setUsersData} isAdmin={isAdmin}/>
           ))}
         </tbody>
       </table>
