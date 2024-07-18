@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 const TOKEN_COOKIE_KEY = "myapp_jwt";
 
 export const setTokenCookie = (token: string) => {
-  Cookies.set(TOKEN_COOKIE_KEY, token, { expires: 2 });
+  Cookies.set(TOKEN_COOKIE_KEY, token, { expires: 1 });
 };
 
 export const getTokenCookie = (): string | undefined => {

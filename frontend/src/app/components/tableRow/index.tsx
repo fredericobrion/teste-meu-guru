@@ -5,20 +5,21 @@ import { ErrorsInputs } from "../../..//types/errors-inputs";
 import {
   validateCpf,
   validateEmail,
-  validateInputs,
-  validatePhone,
+  validatePhone
 } from "../../../utils/validateInputs";
 
 type TableRowProps = {
   user: User;
   usersData: User[];
   setUsersData: (users: User[]) => void;
+  isAdmin: boolean;
 };
 
 export default function TableRow({
   user,
   usersData,
   setUsersData,
+  isAdmin,
 }: TableRowProps) {
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(user.name);
@@ -133,7 +134,7 @@ export default function TableRow({
         >
           {editing ? "Confirmar" : "Editar"}
         </button>
-        <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
+        <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" disabled={!isAdmin}>
           Excluir
         </button>
       </td>

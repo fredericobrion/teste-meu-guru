@@ -5,15 +5,21 @@ import { fetchUserData } from "../../utils/api";
 import { useRouter } from "next/navigation";
 import { User } from "../../types/user";
 import TableRow from "../components/tableRow";
+import { jwtDecode } from "jwt-decode";
 
 export default function UsersListPage() {
   const router = useRouter();
 
   const [usersData, setUsersData] = useState<User[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const fetch = async () => {
       if (getTokenCookie()) {
+        const decoded = jwtDecode(getTokenCookie()!);
+
+        setIsAdmin(decoded.admin)
+
         try {
           const response = await fetchUserData();
           setUsersData(response.data.filter((u: User) => u.email !== 'admin@admin.com'));
