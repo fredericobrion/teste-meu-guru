@@ -99,6 +99,7 @@ export default function UsersListPage() {
             onChange={handleItemsPerPageChange}
             className="border border-gray-300 rounded-md px-2 py-1"
           >
+            <option value={3}>3 por página</option>
             <option value={10}>10 por página</option>
             <option value={20}>20 por página</option>
             <option value={30}>30 por página</option>

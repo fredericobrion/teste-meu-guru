@@ -5,8 +5,9 @@ import { ErrorsInputs } from "../../../types/errors-inputs";
 import {
   validateCpf,
   validateEmail,
-  validatePhone
+  validatePhone,
 } from "../../../utils/validateInputs";
+import { deleteUser } from "../../../utils/api";
 
 type TableRowProps = {
   user: User;
@@ -55,6 +56,15 @@ export default function TableRow({
       ...errors,
       phone: !validatePhone(formatPhone(e.target.value)),
     });
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteUser(user.id);
+      setUsersData(usersData.filter((u) => u.id !== user.id));
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const validsInputs =
@@ -124,7 +134,7 @@ export default function TableRow({
       <td className="py-2 px-2 md:px-4 border-b text-center">
         <button
           className={`bg-blue-500 text-white px-2 py-1 rounded mr-2 ${
-            (validsInputs || !isAdmin)
+            validsInputs || !isAdmin
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-blue-600 hover:scale-105 cursor-pointer"
           }`}
@@ -133,11 +143,15 @@ export default function TableRow({
         >
           {editing ? "Confirmar" : "Editar"}
         </button>
-        <button className={`bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" disabled={!isAdmin} ${
-            (validsInputs || !isAdmin)
+        <button
+          onClick={handleDelete}
+          disabled={!isAdmin}
+          className={`bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" disabled={!isAdmin} ${
+            validsInputs || !isAdmin
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-red-600 hover:scale-105 cursor-pointer"
-          }`}>
+          }`}
+        >
           Excluir
         </button>
       </td>

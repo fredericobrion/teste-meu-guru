@@ -78,3 +78,12 @@ export const createUser = async (
     throw new Error("Erro no servidor");
   }
 };
+
+export const deleteUser = async (id: number) => {
+  try {
+    const response = await axiosInstance.delete(`/user/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error("Erro ao remover usuário");
+  }
+};
