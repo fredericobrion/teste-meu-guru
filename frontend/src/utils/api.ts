@@ -44,12 +44,11 @@ export const login = async (email: string, password: string) => {
   }
 };
 
-export const fetchUserData = async () => {
+export const fetchUserData = async (page: number = 1, limit: number = 10, filter?: string) => {
   try {
-    const response = await axiosInstance.get("/user");
+    const response = await axiosInstance.get(`/user?page=${page}&limit=${limit}${filter ? `&filter=${filter}` : ''}`);
     return response.data;
   } catch (error) {
-    console.log(error);
     throw new Error("Erro ao buscar dados do usuário");
   }
 };

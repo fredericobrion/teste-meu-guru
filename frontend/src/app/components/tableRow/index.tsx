@@ -124,16 +124,20 @@ export default function TableRow({
       <td className="py-2 px-2 md:px-4 border-b text-center">
         <button
           className={`bg-blue-500 text-white px-2 py-1 rounded mr-2 ${
-            validsInputs
+            (validsInputs || !isAdmin)
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-blue-600 hover:scale-105 cursor-pointer"
           }`}
-          disabled={validsInputs}
+          disabled={validsInputs || !isAdmin}
           onClick={() => setEditing(!editing)}
         >
           {editing ? "Confirmar" : "Editar"}
         </button>
-        <button className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" disabled={!isAdmin}>
+        <button className={`bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600" disabled={!isAdmin} ${
+            (validsInputs || !isAdmin)
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-red-600 hover:scale-105 cursor-pointer"
+          }`}>
           Excluir
         </button>
       </td>

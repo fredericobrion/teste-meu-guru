@@ -8,6 +8,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../module/prisma/prisma.service';
 import { UserToReturnDto } from './dto/created-user.dto';
 import * as bcrypt from 'bcrypt';
+import { Prisma } from '@prisma/client';
 
 const SALT_ROUNDS = process.env.BCRYPT_SALT_ROUNDS || 10;
 
@@ -53,11 +54,20 @@ export class UserService {
 
   async findAll(page: number, limit: number, filter: string) {
     const skip = (page - 1) * limit;
-    const where = filter
-      ? {
-          OR: [{ name: { contains: filter } }, { email: { contains: filter } }],
-        }
-      : {};
+    const where: Prisma.UserWhereInput = {
+      AND: [
+        filter
+          ? {
+              OR: [
+                { name: { contains: filter, mode: 'insensitive' } },
+                { email: { contains: filter, mode: 'insensitive' } },
+              ],
+            }
+          : {},
+        { email: { not: 'admin@admin.com' } },
+      ],
+    };
+
     const users = await this.prisma.user.findMany({ where, skip, take: limit });
 
     const usersToReturn = users.map((user) => {
@@ -73,7 +83,21 @@ export class UserService {
       return userToReturn;
     });
 
-    const totalUsers = await this.prisma.user.count({ where });
+    const totalUsers = await this.prisma.user.count({
+      where: {
+        AND: [
+          filter
+            ? {
+                OR: [
+                  { name: { contains: filter, mode: 'insensitive' } },
+                  { email: { contains: filter, mode: 'insensitive' } },
+                ],
+              }
+            : {},
+          { email: { not: 'admin@admin.com' } },
+        ],
+      },
+    });
 
     return { total: totalUsers, page, limit, data: usersToReturn };
   }
@@ -89,7 +113,7 @@ export class UserService {
       throw new NotFoundException(`User with ID ${id} not found`);
     }
 
-    if (updateUserDto.email && updateUserDto.email !== userInDb.email) {
+    if (updateUserDto.email !== userInDb.email) {
       const existingUser = await this.prisma.user.findUnique({
         where: { email: updateUserDto.email },
       });
