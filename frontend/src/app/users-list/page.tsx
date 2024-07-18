@@ -114,12 +114,12 @@ export default function UsersListPage() {
       <table className="min-w-full bg-white border border-gray-200">
         <thead>
           <tr className="bg-gray-100">
-            <th className="py-2 px-4 border-b w-2/9">E-mail</th>
-            <th className="py-2 px-4 border-b w-2/9">Nome</th>
-            <th className="py-2 px-0 border-b w-1/9">CPF</th>
-            <th className="py-2 px-4 border-b w-1/9">Telefone</th>
-            <th className="py-2 px-4 border-b w-1/9">Cargo</th>
-            <th className="py-2 px-4 border-b w-2/9">Ações</th>
+            <th className="py-2 px-4 border-b w-1/5">E-mail</th>
+            <th className="py-2 px-4 border-b w-1/5">Nome</th>
+            <th className="py-2 px-4 border-b w-1/5">CPF</th>
+            <th className="py-2 px-4 border-b w-1/5">Telefone</th>
+            <th className="py-2 px-4 border-b w-1/10">Cargo</th>
+            <th className="py-2 px-4 border-b w-1/5">Ações</th>
           </tr>
         </thead>
         <tbody>

@@ -87,3 +87,28 @@ export const deleteUser = async (id: number) => {
     throw new Error("Erro ao remover usuário");
   }
 };
+
+export const updateUser = async (
+  id: number,
+  name: string,
+  email: string,
+  cpf: string,
+  phone: string,
+  admin: boolean
+) => {
+  try {
+    const response = await axiosInstance.patch(`/user/${id}`, {
+      name,
+      email,
+      cpf,
+      phone,
+      admin,
+    });
+    return response.data;
+  } catch (error) {
+    if (error.response.status) {
+      throw new Error(error.response.data.message);
+    }
+    throw new Error("Erro no servidor");
+  }
+};
