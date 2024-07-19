@@ -22,6 +22,10 @@ function Header() {
     router.push("/create");
   };
 
+  const handleListButtonClick = () => {
+    router.push("/users-list");
+  };
+
   return (
     <header className="flex items-center justify-between bg-purple-600 h-16 px-4">
       {pathname !== "/" && decode && (
@@ -34,17 +38,21 @@ function Header() {
       )}
       <h1 className="text-white font-bold text-center flex-grow">Header</h1>
       <div className="flex space-x-2">
-        {pathname === "/users-list" && decode &&(
+        {pathname !== "/" && decode && (
           <button
             className={`font-bold py-2 px-4 rounded ${
-              decode && !decode.admin
+              decode && !decode.admin && pathname === "/users-list"
                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                 : "text-purple-600 bg-white hover:bg-purple-100"
             }`}
             disabled={!decode.admin}
-            onClick={handleCreateButtonClick}
+            onClick={() =>
+              pathname === "/create"
+                ? handleListButtonClick()
+                : handleCreateButtonClick()
+            }
           >
-            Criar
+            {pathname === "/create" ? "Lista" : "Criar"}
           </button>
         )}
         {pathname !== "/" && (

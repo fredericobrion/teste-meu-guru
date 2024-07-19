@@ -35,6 +35,13 @@ export default function TableRow({
     cpf: false,
     phone: false,
   });
+  const [originalValues, setOriginalValues] = useState({
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    cpf: user.cpf,
+    admin: user.admin,
+  });
 
   const handleChangeEmail = (e: ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -48,7 +55,7 @@ export default function TableRow({
 
   const handleChangeCpf = (e: ChangeEvent<HTMLInputElement>) => {
     setCpf(formatCPF(e.target.value));
-    setErrors({ ...errors, cpf: !validateCpf(e.target.value) });
+    setErrors({ ...errors, cpf: !validateCpf(formatCPF(e.target.value)) });
   };
 
   const handleChangePhone = (e: ChangeEvent<HTMLInputElement>) => {
@@ -63,6 +70,11 @@ export default function TableRow({
     try {
       await deleteUser(user.id);
       setUsersData(usersData.filter((u) => u.id !== user.id));
+      Swal.fire({
+        icon: "success",
+        text: "Usuário excluido",
+        timer: 1500,
+      });
     } catch (error) {
       console.error(error);
       Swal.fire({
@@ -84,6 +96,7 @@ export default function TableRow({
       Swal.fire({
         icon: "success",
         text: "Usuário atualizado",
+        timer: 1500,
       });
     } catch (error) {
       console.error(error);
@@ -92,6 +105,16 @@ export default function TableRow({
         text: "Erro ao atualizar usuário",
       });
     }
+  };
+
+  const handleCancelEdit = () => {
+    setEditing(false);
+    setName(originalValues.name);
+    setEmail(originalValues.email);
+    setPhone(originalValues.phone);
+    setCpf(originalValues.cpf);
+    setAdmin(originalValues.admin);
+    setErrors({ name: false, email: false, cpf: false, phone: false });
   };
 
   const validsInputs =
@@ -163,7 +186,9 @@ export default function TableRow({
         {editing ? (
           <select
             value={admin ? "Administrador" : "Usuário"}
-            onChange={(e) => handleChangeAdmin(e.target.value === "Administrador")}
+            onChange={(e) =>
+              handleChangeAdmin(e.target.value === "Administrador")
+            }
             className="rounded-md border px-2 py-1 w-full focus:shadow-purple-500 focus:shadow-sm focus:outline-none border-gray-300"
           >
             <option value="Administrador">Administrador</option>
@@ -188,10 +213,10 @@ export default function TableRow({
           {editing ? "Confirmar" : "Editar"}
         </button>
         <button
-          onClick={() => (editing ? setEditing(false) : handleDelete())}
+          onClick={() => (editing ? handleCancelEdit() : handleDelete())}
           disabled={!isAdmin}
           className={`bg-red-500 text-white px-4 py-2 rounded block w-full ${
-            validsInputs || !isAdmin
+            !isAdmin
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-red-600 hover:scale-105 cursor-pointer"
           }`}

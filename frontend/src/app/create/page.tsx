@@ -11,6 +11,7 @@ import {
 import { getTokenCookie } from "../../utils/cookieUtils";
 import { jwtDecode } from "jwt-decode";
 import { createUser } from "../../utils/api";
+import Swal from "sweetalert2";
 
 export default function CreatePage() {
   const router = useRouter();
@@ -119,6 +120,12 @@ export default function CreatePage() {
 
     try {
       await createUser(name, email, password, cpf, phone, admin);
+
+      Swal.fire({
+        icon: "success",
+        text: "Usuário criado",
+        timer: 1500,
+      });
 
       router.push("/users-list");
     } catch (error) {

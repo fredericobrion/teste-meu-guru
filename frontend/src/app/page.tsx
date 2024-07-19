@@ -4,7 +4,7 @@ import { login } from "../utils/api";
 import { useRouter } from "next/navigation";
 import { setTokenCookie } from "../utils/cookieUtils";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
-import { validateEmail } from '../utils/validateInputs';
+import { validateEmail } from "../utils/validateInputs";
 
 export default function Home() {
   const router = useRouter();
@@ -39,8 +39,8 @@ export default function Home() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    setEmailError('');
-    setPasswordError('');
+    setEmailError("");
+    setPasswordError("");
 
     const validEmail = validateEmailInput();
     const validPassword = validatePasswordInput();
@@ -49,18 +49,15 @@ export default function Home() {
       return;
     }
 
+    
     try {
       const token = await login(email, password);
-
+      
       setTokenCookie(token);
-
+      
       router.push("/users-list");
     } catch (error) {
-      if (error.response?.status === 401) {
-        setLoginError("E-mail ou senha incorretos");
-      } else {
-        setLoginError("Erro ao fazer login. Por favor, tente novamente.");
-      }
+      setLoginError(error.message)
     }
   };
 
@@ -107,7 +104,7 @@ export default function Home() {
         >
           Entrar
         </button>
-        {loginError && <p className="text-red-600">{loginError}</p>}
+        {loginError && <p className="text-red-600 my-4">{loginError}</p>}
       </form>
     </div>
   );
