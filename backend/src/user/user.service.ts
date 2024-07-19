@@ -9,6 +9,7 @@ import { PrismaService } from '../module/prisma/prisma.service';
 import { UserToReturnDto } from './dto/created-user.dto';
 import * as bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
+import FormatTransformer from '../utils/format-transformer';
 
 const SALT_ROUNDS = process.env.BCRYPT_SALT_ROUNDS || 10;
 
@@ -34,8 +35,8 @@ export class UserService {
         email,
         password: encryptedPassword,
         name,
-        phone,
-        cpf,
+        phone: FormatTransformer.unformatPhone(phone),
+        cpf: FormatTransformer.unformatCpf(cpf),
       },
     });
 
@@ -43,10 +44,10 @@ export class UserService {
     userToReturn.id = createdUser.id;
     userToReturn.email = createdUser.email;
     userToReturn.name = createdUser.name;
-    userToReturn.phone = createdUser.phone;
+    userToReturn.phone = FormatTransformer.formatPhone(createdUser.phone);
     userToReturn.createdAt = createdUser.createdAt;
     userToReturn.updatedAt = createdUser.updatedAt;
-    userToReturn.cpf = createdUser.cpf;
+    userToReturn.cpf = FormatTransformer.formatCpf(createdUser.cpf);
     userToReturn.admin = createdUser.admin;
 
     return userToReturn;
@@ -75,10 +76,10 @@ export class UserService {
       userToReturn.id = user.id;
       userToReturn.email = user.email;
       userToReturn.name = user.name;
-      userToReturn.phone = user.phone;
+      userToReturn.phone = FormatTransformer.formatPhone(user.phone);
       userToReturn.createdAt = user.createdAt;
       userToReturn.updatedAt = user.updatedAt;
-      userToReturn.cpf = user.cpf;
+      userToReturn.cpf = FormatTransformer.formatCpf(user.cpf);
       userToReturn.admin = user.admin;
       return userToReturn;
     });
@@ -119,6 +120,9 @@ export class UserService {
       }
     }
 
+    updateUserDto.cpf = FormatTransformer.unformatCpf(updateUserDto.cpf);
+    updateUserDto.phone = FormatTransformer.unformatPhone(updateUserDto.phone);
+
     if (updateUserDto.password) {
       updateUserDto.password = await bcrypt.hash(
         updateUserDto.password,
@@ -135,10 +139,10 @@ export class UserService {
     userToReturn.id = updatedUser.id;
     userToReturn.email = updatedUser.email;
     userToReturn.name = updatedUser.name;
-    userToReturn.phone = updatedUser.phone;
+    userToReturn.phone = FormatTransformer.formatPhone(updatedUser.phone);
     userToReturn.createdAt = updatedUser.createdAt;
     userToReturn.updatedAt = updatedUser.updatedAt;
-    userToReturn.cpf = updatedUser.cpf;
+    userToReturn.cpf = FormatTransformer.formatCpf(updatedUser.cpf);
     userToReturn.admin = updatedUser.admin;
 
     return userToReturn;

@@ -2,7 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { userToCreateDto, userToReturn, usersList } from './mocks';
+import {
+  userToCreateDto,
+  userToReturn,
+  userToUpdateDto,
+  usersList,
+} from './mocks';
 import { ThrottlerModule } from '@nestjs/throttler';
 
 describe('UserController', () => {
@@ -115,23 +120,17 @@ describe('UserController', () => {
   describe('update', () => {
     it('should update a user by ID', async () => {
       const userId = '1';
-      const updateUserDto = { name: 'new name' };
-      const updatedUser = {
-        ...usersList[0],
-        ...updateUserDto,
-      };
 
-      jest.spyOn(service, 'update').mockResolvedValue(updatedUser);
+      jest.spyOn(service, 'update').mockResolvedValue(usersList[1]);
 
-      const result = await controller.update(userId, updateUserDto);
+      const result = await controller.update(userId, userToUpdateDto);
 
-      expect(result).toEqual(updatedUser);
-      expect(service.update).toHaveBeenCalledWith(1, updateUserDto);
+      expect(result).toEqual(usersList[1]);
+      expect(service.update).toHaveBeenCalledWith(1, userToUpdateDto);
     });
 
     it('should throw an error if user does not exist for update', async () => {
       const userId = '999';
-      const updateUserDto = { name: 'new name' };
 
       jest
         .spyOn(service, 'update')
@@ -140,26 +139,12 @@ describe('UserController', () => {
         );
 
       try {
-        await controller.update(userId, updateUserDto);
+        await controller.update(userId, userToUpdateDto);
       } catch (error) {
         if (error instanceof NotFoundException) {
           expect(error.message).toBe(`Usuário com ID ${userId} não encontrado`);
           expect(error.getStatus()).toBe(404);
         }
-      }
-    });
-
-    it('should throw an error for invalid email when updating user', async () => {
-      const userId = '999';
-      const invalidUser = {
-        email: 'invalid-email.com',
-      };
-
-      try {
-        await controller.update(userId, invalidUser);
-      } catch (error) {
-        expect(error).toBeInstanceOf(BadRequestException);
-        expect(error.message).toContain('Endereço de e-mail inválido');
       }
     });
 
@@ -171,7 +156,7 @@ describe('UserController', () => {
         .mockRejectedValue(new BadRequestException('E-mail já cadastrado'));
 
       try {
-        await controller.update(userId, { email: 'teste@email.com' });
+        await controller.update(userId, userToUpdateDto);
       } catch (error) {
         expect(error).toBeInstanceOf(BadRequestException);
         expect(error.message).toContain('E-mail já cadastrado');

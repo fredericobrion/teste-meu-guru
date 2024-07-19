@@ -1,25 +1,32 @@
 import { UserToReturnDto } from './dto/created-user.dto';
 
+const FORMATED_CPF = '111.222.333-44';
+const UNFORMATED_CPF = '11122233344';
+const FORMATED_PHONE = '(31) 99157-4879';
+const UNFORMATED_PHONE = '31991574879';
+const ANA_EMAL = 'ana@email.com';
+const MARIA_EMAIL = 'maria@email.com';
+
 const userToCreateDto = {
-  email: 'ana@email.com',
+  email: ANA_EMAL,
   password: '123456',
   name: 'ana',
-  phone: '(32) 99167-4479',
-  cpf: '111.222.333-44',
+  phone: FORMATED_PHONE,
+  cpf: FORMATED_CPF,
 };
 
 const userToUpdateDto = {
-  email: 'maria@email.com',
+  email: MARIA_EMAIL,
   name: 'maria',
-  phone: '(32) 99167-4479',
-  cpf: '111.222.333-44',
+  phone: FORMATED_PHONE,
+  cpf: FORMATED_CPF,
 };
 
 const createdUser = {
   id: 1,
   ...userToCreateDto,
-  phone: '32991674479',
-  cpf: '11122233344',
+  phone: UNFORMATED_PHONE,
+  cpf: UNFORMATED_CPF,
   admin: false,
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -29,8 +36,8 @@ const userToReturn: UserToReturnDto = {
   id: 1,
   email: userToCreateDto.email,
   name: userToCreateDto.name,
-  phone: userToCreateDto.phone,
-  cpf: userToCreateDto.cpf,
+  phone: FORMATED_PHONE,
+  cpf: FORMATED_CPF,
   admin: false,
   createdAt: new Date(),
   updatedAt: new Date(),
@@ -38,28 +45,38 @@ const userToReturn: UserToReturnDto = {
 
 const secondUser: UserToReturnDto = {
   id: 2,
-  email: 'joao@gmail.comm',
-  name: 'joao',
-  phone: '(11) 9955-8899',
-  cpf: '111.222.333-44',
+  email: MARIA_EMAIL,
+  name: 'maria',
+  phone: FORMATED_PHONE,
+  cpf: FORMATED_CPF,
   admin: false,
   createdAt: new Date(),
   updatedAt: new Date(),
 };
 
 const usersInDb = [
-  { ...userToReturn, password: userToCreateDto.password },
-  { ...secondUser, password: userToCreateDto.password },
+  {
+    ...userToReturn,
+    password: userToCreateDto.password,
+    phone: UNFORMATED_PHONE,
+    cpf: UNFORMATED_CPF,
+  },
+  {
+    ...secondUser,
+    password: userToCreateDto.password,
+    phone: UNFORMATED_PHONE,
+    cpf: UNFORMATED_CPF,
+  },
 ];
 
 const usersList = [
   { ...userToReturn },
   {
     id: 2,
-    email: 'joao@gmail.comm',
-    name: 'joao',
-    phone: '(11) 9955-8899',
-    cpf: '111.222.333-44',
+    email: MARIA_EMAIL,
+    name: 'maria',
+    phone: FORMATED_PHONE,
+    cpf: FORMATED_CPF,
     admin: false,
     createdAt: new Date(),
     updatedAt: new Date(),

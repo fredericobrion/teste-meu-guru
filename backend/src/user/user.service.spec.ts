@@ -97,28 +97,17 @@ describe('UserService', () => {
 
   describe('update', () => {
     it('should update a user by ID', async () => {
-      const userId = 1;
-      const updatedUser = {
-        ...usersList[0],
-        ...userToUpdateDto,
-      };
+      const userId = 2;
 
       jest
         .spyOn(prismaService.user, 'findUnique')
-        .mockResolvedValue(usersInDb[0]); //ana
-      jest.spyOn(prismaService.user, 'update').mockResolvedValue({
-        ...updatedUser,
-        password: '123456',
-        cpf: '111.222.333-44',
-        admin: false,
-      });
+        .mockResolvedValue(usersInDb[1]);
 
-      const result = await service.update(userId, {
-        ...userToUpdateDto,
-        email: usersList[0].email,
-      });
+      jest.spyOn(prismaService.user, 'update').mockResolvedValue(usersInDb[1]);
 
-      expect(result).toEqual(updatedUser);
+      const result = await service.update(userId, userToUpdateDto);
+
+      expect(result).toEqual(usersList[1]);
     });
 
     it('should throw an error if user does not exist for update', async () => {
