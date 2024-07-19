@@ -20,13 +20,7 @@ export class UserService {
   async create(createUserDto: CreateUserDto) {
     const { email, password, name, phone, cpf } = createUserDto;
 
-    const existingUser = await this.prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (existingUser) {
-      throw new BadRequestException('E-mail já cadastrado');
-    }
+    await this.validateUserEmail(email);
 
     const encryptedPassword = await bcrypt.hash(password, +SALT_ROUNDS);
 
@@ -110,15 +104,7 @@ export class UserService {
       throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
 
-    if (updateUserDto.email !== userInDb.email) {
-      const existingUser = await this.prisma.user.findUnique({
-        where: { email: updateUserDto.email },
-      });
-
-      if (existingUser) {
-        throw new BadRequestException('E-mail já cadastrado');
-      }
-    }
+    await this.validateUserEmail(updateUserDto.email, userInDb.email);
 
     updateUserDto.cpf = FormatTransformer.unformatCpf(updateUserDto.cpf);
     updateUserDto.phone = FormatTransformer.unformatPhone(updateUserDto.phone);
@@ -164,5 +150,17 @@ export class UserService {
     const user = await this.prisma.user.findUnique({ where: { email } });
 
     return user;
+  }
+
+  private async validateUserEmail(email: string, currentEmail?: string) {
+    if (email !== currentEmail) {
+      const existingUser = await this.prisma.user.findUnique({
+        where: { email },
+      });
+
+      if (existingUser) {
+        throw new BadRequestException('E-mail já cadastrado');
+      }
+    }
   }
 }
