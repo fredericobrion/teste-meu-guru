@@ -12,6 +12,7 @@ import {
   ChevronLeftIcon,
   ChevronDoubleLeftIcon,
 } from "@heroicons/react/24/outline";
+import Swal from "sweetalert2";
 
 export default function UsersListPage() {
   const router = useRouter();
@@ -24,19 +25,6 @@ export default function UsersListPage() {
   const [filterValue, setFilterValue] = useState("");
 
   const totalPages = Math.ceil(totalUsers / itemsPerPage);
-
-  const handlePageChange = (page: number) => {
-    if (page > 0 && page <= totalPages) {
-      setCurrentPage(page);
-      getUsers(page, itemsPerPage, filterValue);
-    }
-  };
-
-  const handleItemsPerPageChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setItemsPerPage(parseInt(e.target.value, 10));
-    setCurrentPage(1);
-    getUsers(1, parseInt(e.target.value, 10));
-  };
 
   useEffect(() => {
     const fetch = async () => {
@@ -55,12 +43,38 @@ export default function UsersListPage() {
           console.error(error);
         }
       } else {
-        router.push("/");
+        Swal.fire({
+          icon: "error",
+          text: "Necessário estar logado",
+          timer: 2000,
+          confirmButtonText: 'Voltar',
+          timerProgressBar: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            router.push('/');
+          }
+        });
+
+        setTimeout(() => router.push("/"), 2000);
       }
     };
 
     fetch();
   }, []);
+
+  const handlePageChange = (page: number) => {
+    if (page > 0 && page <= totalPages) {
+      setCurrentPage(page);
+      getUsers(page, itemsPerPage, filterValue);
+    }
+  };
+
+  const handleItemsPerPageChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(parseInt(e.target.value, 10));
+    setCurrentPage(1);
+    getUsers(1, parseInt(e.target.value, 10));
+  };
+
 
   const getUsers = async (
     page: number = currentPage,

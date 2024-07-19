@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getTokenCookie } from "./cookieUtils";
+import { getTokenCookie, setTokenCookie } from "./cookieUtils";
 
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
 
@@ -32,11 +32,11 @@ export const login = async (email: string, password: string) => {
 
     const token = response.data.access_token;
 
-    document.cookie = `token=${token}; path=/;`;
+    setTokenCookie(token);
 
-    return token;
+    return;
   } catch (error) {
-    if (error.response.status) {
+    if (error.response?.status) {
       throw new Error("E-mail e/ou senha inválidos");
     } else {
       throw new Error("Erro ao comunicar com o servidor");

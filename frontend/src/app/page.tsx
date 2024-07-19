@@ -1,8 +1,8 @@
 "use client";
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useEffect } from "react";
 import { login } from "../utils/api";
 import { useRouter } from "next/navigation";
-import { setTokenCookie } from "../utils/cookieUtils";
+import { setTokenCookie, removeTokenCookie } from "../utils/cookieUtils";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { validateEmail } from "../utils/validateInputs";
 
@@ -15,6 +15,14 @@ export default function Home() {
   const [passwordError, setPasswordError] = useState("");
   const [loginError, setLoginError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    const cleanCookie = () => {
+      removeTokenCookie();
+    }
+
+    cleanCookie();
+  }, [])
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -41,6 +49,7 @@ export default function Home() {
 
     setEmailError("");
     setPasswordError("");
+    setLoginError("");
 
     const validEmail = validateEmailInput();
     const validPassword = validatePasswordInput();
@@ -48,12 +57,9 @@ export default function Home() {
     if (!validEmail || !validPassword) {
       return;
     }
-
     
     try {
-      const token = await login(email, password);
-      
-      setTokenCookie(token);
+      await login(email, password);
       
       router.push("/users-list");
     } catch (error) {
@@ -65,7 +71,7 @@ export default function Home() {
     <div className="container mx-auto">
       <form
         className="flex flex-col items-center mt-16"
-        onSubmit={handleSubmit}
+        onSubmit={(e) => handleSubmit(e)}
       >
         <input
           value={email}

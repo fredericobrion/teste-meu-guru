@@ -2,16 +2,30 @@
 import { usePathname, useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import { removeTokenCookie, getTokenCookie } from "../../../utils/cookieUtils";
+import { useEffect, useState } from "react";
+import logo from '../../../../public/logo.png';
+import Image from "next/image";
 
 function Header() {
   const pathname = usePathname();
   const router = useRouter();
-  const token = getTokenCookie()!;
 
-  let decode;
-  if (token) {
-    decode = jwtDecode(token);
-  }
+  const [decode, setDecode] = useState({});
+
+
+  useEffect(() => {
+    const getToken = () => {
+      if (pathname !== "/") {
+        const token = getTokenCookie()!;
+
+        if (token) {
+          setDecode(jwtDecode(token));
+        }
+      }
+    };
+
+    getToken();
+  }, []);
 
   const handleLogout = () => {
     removeTokenCookie();
@@ -27,7 +41,7 @@ function Header() {
   };
 
   return (
-    <header className="flex items-center justify-between bg-purple-600 h-16 px-4">
+    <header className="flex items-center justify-between bg-purple-600 h-32 px-4">
       {pathname !== "/" && decode && (
         <div className="flex flex-col text-white">
           <h3 className="text-lg font-semibold">{decode.name}</h3>
@@ -36,7 +50,9 @@ function Header() {
           </h4>
         </div>
       )}
-      <h1 className="text-white font-bold text-center flex-grow">Header</h1>
+      <div className="flex-grow flex justify-center">
+        <Image src={logo} alt="Logo Meu Guru" className="max-h-44 max-w-44" />
+      </div>
       <div className="flex space-x-2">
         {pathname !== "/" && decode && (
           <button

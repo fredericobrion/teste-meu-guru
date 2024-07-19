@@ -42,7 +42,19 @@ export default function CreatePage() {
 
         setIsAdmin(true);
       } else {
-        router.push("/");
+        Swal.fire({
+          icon: "error",
+          text: "Necessário estar logado",
+          timer: 2000,
+          confirmButtonText: 'Voltar',
+          timerProgressBar: true,
+        }).then((result) => {
+          if (result.isConfirmed) {
+            router.push('/');
+          }
+        });
+
+        setTimeout(() => router.push("/"), 2000);
       }
     };
 
