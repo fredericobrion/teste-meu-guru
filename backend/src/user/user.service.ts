@@ -102,10 +102,6 @@ export class UserService {
     return { total: totalUsers, page, limit, data: usersToReturn };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
   async update(id: number, updateUserDto: UpdateUserDto) {
     const userInDb = await this.prisma.user.findUnique({ where: { id } });
 
