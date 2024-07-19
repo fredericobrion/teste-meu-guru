@@ -11,7 +11,7 @@ import {
   userToUpdateDto,
 } from './mocks';
 
-describe.skip('UserService', () => {
+describe('UserService', () => {
   let service: UserService;
   let prismaService: PrismaService;
 

@@ -10,7 +10,7 @@ import {
 } from './mocks';
 import { ThrottlerModule } from '@nestjs/throttler';
 
-describe.skip('UserController', () => {
+describe('UserController', () => {
   let controller: UserController;
   let service: UserService;
 
