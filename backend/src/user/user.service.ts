@@ -24,7 +24,7 @@ export class UserService {
     });
 
     if (existingUser) {
-      throw new BadRequestException('User already exists');
+      throw new BadRequestException('E-mail já cadastrado');
     }
 
     const encryptedPassword = await bcrypt.hash(password, +SALT_ROUNDS);
@@ -110,7 +110,7 @@ export class UserService {
     const userInDb = await this.prisma.user.findUnique({ where: { id } });
 
     if (!userInDb) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
 
     if (updateUserDto.email !== userInDb.email) {
@@ -119,7 +119,7 @@ export class UserService {
       });
 
       if (existingUser) {
-        throw new BadRequestException('Email already exists');
+        throw new BadRequestException('E-mail já cadastrado');
       }
     }
 
@@ -152,12 +152,12 @@ export class UserService {
     const userInDb = await this.prisma.user.findUnique({ where: { id } });
 
     if (!userInDb) {
-      throw new NotFoundException(`User with ID ${id} not found`);
+      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
 
     await this.prisma.user.delete({ where: { id } });
 
-    return { message: 'User deleted' };
+    return { message: 'Usuário excluido' };
   }
 
   async findByEmail(email: string) {
