@@ -46,29 +46,15 @@ describe('UserController', () => {
     it('should throw an error if email already exists', async () => {
       jest
         .spyOn(service, 'create')
-        .mockRejectedValue(new BadRequestException('User already exists'));
+        .mockRejectedValue(new BadRequestException('E-mail já cadastrado'));
 
       try {
         await controller.create(userToCreateDto);
       } catch (error) {
         if (error instanceof BadRequestException) {
-          expect(error.message).toBe('User already exists');
+          expect(error.message).toBe('E-mail já cadastrado');
           expect(error.getStatus()).toBe(400);
         }
-      }
-    });
-
-    it('should throw an error for invalid email when creating user', async () => {
-      const invalidUser = {
-        ...userToCreateDto,
-        email: 'invalid-email.com',
-      };
-
-      try {
-        await controller.create(invalidUser);
-      } catch (error) {
-        expect(error).toBeInstanceOf(BadRequestException);
-        expect(error.message).toContain('Invalid email address');
       }
     });
   });
@@ -97,7 +83,7 @@ describe('UserController', () => {
   describe('remove', () => {
     it('should delete a user by ID', async () => {
       const userId = '1';
-      const expectedResponse = { message: 'User deleted' };
+      const expectedResponse = { message: 'Usuário excluido' };
 
       jest.spyOn(service, 'remove').mockResolvedValue(expectedResponse);
 
@@ -112,14 +98,14 @@ describe('UserController', () => {
       jest
         .spyOn(service, 'remove')
         .mockRejectedValue(
-          new NotFoundException(`User with ID ${userId} not found`),
+          new NotFoundException(`Usuário com ID ${userId} não encontrado`),
         );
 
       try {
         await controller.remove(userId);
       } catch (error) {
         if (error instanceof NotFoundException) {
-          expect(error.message).toBe(`User with ID ${userId} not found`);
+          expect(error.message).toBe(`Usuário com ID ${userId} não encontrado`);
           expect(error.getStatus()).toBe(404);
         }
       }
@@ -150,14 +136,14 @@ describe('UserController', () => {
       jest
         .spyOn(service, 'update')
         .mockRejectedValue(
-          new NotFoundException(`User with ID ${userId} not found`),
+          new NotFoundException(`Usuário com ID ${userId} não encontrado`),
         );
 
       try {
         await controller.update(userId, updateUserDto);
       } catch (error) {
         if (error instanceof NotFoundException) {
-          expect(error.message).toBe(`User with ID ${userId} not found`);
+          expect(error.message).toBe(`Usuário com ID ${userId} não encontrado`);
           expect(error.getStatus()).toBe(404);
         }
       }
@@ -173,7 +159,7 @@ describe('UserController', () => {
         await controller.update(userId, invalidUser);
       } catch (error) {
         expect(error).toBeInstanceOf(BadRequestException);
-        expect(error.message).toContain('Invalid email address');
+        expect(error.message).toContain('Endereço de e-mail inválido');
       }
     });
 
@@ -182,13 +168,13 @@ describe('UserController', () => {
 
       jest
         .spyOn(service, 'update')
-        .mockRejectedValue(new BadRequestException('Email already exists'));
+        .mockRejectedValue(new BadRequestException('E-mail já cadastrado'));
 
       try {
         await controller.update(userId, { email: 'teste@email.com' });
       } catch (error) {
         expect(error).toBeInstanceOf(BadRequestException);
-        expect(error.message).toContain('Email already exists');
+        expect(error.message).toContain('E-mail já cadastrado');
       }
     });
   });

@@ -84,7 +84,7 @@ describe('UserService', () => {
 
       const result = await service.remove(userId);
 
-      expect(result).toEqual({ message: 'User deleted' });
+      expect(result).toEqual({ message: 'Usuário excluido' });
     });
 
     it('should throw an error if user does not exist for delete', async () => {
