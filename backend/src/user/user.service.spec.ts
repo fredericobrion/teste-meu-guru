@@ -136,4 +136,26 @@ describe('UserService', () => {
       );
     });
   });
+
+  describe('validateUserEmail', () => {
+    it('should return user if email exists', async () => {
+      jest
+        .spyOn(prismaService.user, 'findUnique')
+        .mockResolvedValue(createdUser);
+
+      const result = await service['validateUserEmail']('test@example.com');
+
+      expect(result).toEqual(createdUser);
+    });
+
+    it('should return null if email does not exist', async () => {
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+
+      const result = await service['validateUserEmail'](
+        'nonexistent@example.com',
+      );
+
+      expect(result).toBeNull();
+    });
+  });
 });
