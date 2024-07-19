@@ -10,21 +10,38 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signIn(email: string, password: string) {
+  async signIn(
+    email: string,
+    password: string,
+  ): Promise<{ access_token: string }> {
     const foundUser = await this.userService.findByEmail(email);
 
-    if (!foundUser || !bcrypt.compareSync(password, foundUser.password)) {
+    if (
+      !foundUser ||
+      !(await this.validatePassword(password, foundUser.password))
+    ) {
       throw new UnauthorizedException('Wrong email and/or password');
     }
 
-    const payload = {
-      sub: foundUser.id,
-      name: foundUser.name,
-      admin: foundUser.admin,
-    };
+    const payload = this.createTokenPayload(foundUser);
 
+    const access_token = await this.jwtService.signAsync(payload);
+
+    return { access_token };
+  }
+
+  private async validatePassword(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return bcrypt.compare(password, hashedPassword);
+  }
+
+  private createTokenPayload(user: any): any {
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      sub: user.id,
+      name: user.name,
+      admin: user.admin,
     };
   }
 }
