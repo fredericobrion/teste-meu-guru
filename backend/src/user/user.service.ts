@@ -8,14 +8,14 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../module/prisma/prisma.service';
 import { UserToReturnDto } from './dto/created-user.dto';
 import * as bcrypt from 'bcrypt';
-import { Prisma } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 import FormatTransformer from '../utils/format-transformer';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<UserToReturnDto> {
     const { email, password, name, phone, cpf } = createUserDto;
 
     await this.validateUserEmail(email);
@@ -35,7 +35,16 @@ export class UserService {
     return this.toUserToReturnDto(createdUser);
   }
 
-  async findAll(page: number, limit: number, filter: string) {
+  async findAll(
+    page: number,
+    limit: number,
+    filter: string,
+  ): Promise<{
+    total: number;
+    page: number;
+    limit: number;
+    data: UserToReturnDto[];
+  }> {
     const skip = (page - 1) * limit;
     const where: Prisma.UserWhereInput = {
       AND: [
@@ -60,7 +69,10 @@ export class UserService {
     return { total: totalUsers, page, limit, data: usersToReturn };
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(
+    id: number,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserToReturnDto> {
     const userInDb = await this.prisma.user.findUnique({ where: { id } });
 
     if (!userInDb) {
@@ -86,7 +98,7 @@ export class UserService {
     return this.toUserToReturnDto(updatedUser);
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<{ message: string }> {
     const userInDb = await this.prisma.user.findUnique({ where: { id } });
 
     if (!userInDb) {
@@ -98,13 +110,16 @@ export class UserService {
     return { message: 'Usuário excluido' };
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({ where: { email } });
 
     return user;
   }
 
-  private async validateUserEmail(email: string, currentEmail?: string) {
+  private async validateUserEmail(
+    email: string,
+    currentEmail?: string,
+  ): Promise<void> {
     if (email !== currentEmail) {
       const existingUser = await this.prisma.user.findUnique({
         where: { email },
