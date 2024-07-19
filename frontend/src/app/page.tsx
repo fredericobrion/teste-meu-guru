@@ -93,6 +93,7 @@ export default function Home() {
           />
           <button
             type="button"
+            data-testid="toggleBtn"
             onClick={togglePasswordVisibility}
             className="absolute right-3 top-1/2 transform -translate-y-1/2"
           >

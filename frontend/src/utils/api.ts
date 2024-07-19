@@ -72,8 +72,8 @@ export const createUser = async (
     });
     return response.data;
   } catch (error) {
-    if (error.response.status) {
-      throw new Error(error.response.data.message);
+    if (error.response?.data?.errorMessage) {
+      throw new Error(error.response.data.errorMessage);
     }
     throw new Error("Erro no servidor");
   }
