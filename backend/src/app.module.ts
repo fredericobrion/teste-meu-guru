@@ -9,7 +9,9 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthModule } from './auth/auth.module';
-import { LoggerMiddleware } from './middlewares/morgan-logger.middleware';
+import { LoggerMiddleware } from './middlewares/logger.middleware';
+import { winstonLogger } from './winston-logger';
+import { WinstonModule } from 'nest-winston';
 
 @Module({
   imports: [
@@ -21,7 +23,9 @@ import { LoggerMiddleware } from './middlewares/morgan-logger.middleware';
       },
     ]),
     AuthModule,
-    UserModule,
+    WinstonModule.forRoot({
+      instance: winstonLogger,
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
