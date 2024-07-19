@@ -11,8 +11,6 @@ import * as bcrypt from 'bcrypt';
 import { Prisma } from '@prisma/client';
 import FormatTransformer from '../utils/format-transformer';
 
-const SALT_ROUNDS = process.env.BCRYPT_SALT_ROUNDS || 10;
-
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
@@ -22,7 +20,7 @@ export class UserService {
 
     await this.validateUserEmail(email);
 
-    const encryptedPassword = await bcrypt.hash(password, +SALT_ROUNDS);
+    const encryptedPassword = await this.encryptPassword(password);
 
     const createdUser = await this.prisma.user.create({
       data: {
@@ -34,17 +32,7 @@ export class UserService {
       },
     });
 
-    const userToReturn = new UserToReturnDto();
-    userToReturn.id = createdUser.id;
-    userToReturn.email = createdUser.email;
-    userToReturn.name = createdUser.name;
-    userToReturn.phone = FormatTransformer.formatPhone(createdUser.phone);
-    userToReturn.createdAt = createdUser.createdAt;
-    userToReturn.updatedAt = createdUser.updatedAt;
-    userToReturn.cpf = FormatTransformer.formatCpf(createdUser.cpf);
-    userToReturn.admin = createdUser.admin;
-
-    return userToReturn;
+    return this.toUserToReturnDto(createdUser);
   }
 
   async findAll(page: number, limit: number, filter: string) {
@@ -65,34 +53,9 @@ export class UserService {
 
     const users = await this.prisma.user.findMany({ where, skip, take: limit });
 
-    const usersToReturn = users.map((user) => {
-      const userToReturn = new UserToReturnDto();
-      userToReturn.id = user.id;
-      userToReturn.email = user.email;
-      userToReturn.name = user.name;
-      userToReturn.phone = FormatTransformer.formatPhone(user.phone);
-      userToReturn.createdAt = user.createdAt;
-      userToReturn.updatedAt = user.updatedAt;
-      userToReturn.cpf = FormatTransformer.formatCpf(user.cpf);
-      userToReturn.admin = user.admin;
-      return userToReturn;
-    });
+    const usersToReturn = users.map((u) => this.toUserToReturnDto(u));
 
-    const totalUsers = await this.prisma.user.count({
-      where: {
-        AND: [
-          filter
-            ? {
-                OR: [
-                  { name: { contains: filter, mode: 'insensitive' } },
-                  { email: { contains: filter, mode: 'insensitive' } },
-                ],
-              }
-            : {},
-          { email: { not: 'admin@admin.com' } },
-        ],
-      },
-    });
+    const totalUsers = await this.prisma.user.count({ where });
 
     return { total: totalUsers, page, limit, data: usersToReturn };
   }
@@ -110,9 +73,8 @@ export class UserService {
     updateUserDto.phone = FormatTransformer.unformatPhone(updateUserDto.phone);
 
     if (updateUserDto.password) {
-      updateUserDto.password = await bcrypt.hash(
+      updateUserDto.password = await this.encryptPassword(
         updateUserDto.password,
-        +SALT_ROUNDS,
       );
     }
 
@@ -121,17 +83,7 @@ export class UserService {
       data: updateUserDto,
     });
 
-    const userToReturn = new UserToReturnDto();
-    userToReturn.id = updatedUser.id;
-    userToReturn.email = updatedUser.email;
-    userToReturn.name = updatedUser.name;
-    userToReturn.phone = FormatTransformer.formatPhone(updatedUser.phone);
-    userToReturn.createdAt = updatedUser.createdAt;
-    userToReturn.updatedAt = updatedUser.updatedAt;
-    userToReturn.cpf = FormatTransformer.formatCpf(updatedUser.cpf);
-    userToReturn.admin = updatedUser.admin;
-
-    return userToReturn;
+    return this.toUserToReturnDto(updatedUser);
   }
 
   async remove(id: number) {
@@ -162,5 +114,24 @@ export class UserService {
         throw new BadRequestException('E-mail já cadastrado');
       }
     }
+  }
+
+  private async encryptPassword(password: string): Promise<string> {
+    const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
+
+    return bcrypt.hash(password, SALT_ROUNDS);
+  }
+
+  private toUserToReturnDto(user): UserToReturnDto {
+    return {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      phone: FormatTransformer.formatPhone(user.phone),
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
+      cpf: FormatTransformer.formatCpf(user.cpf),
+      admin: user.admin,
+    };
   }
 }
