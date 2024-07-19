@@ -1,3 +1,5 @@
+import { SignInDto } from './dto/signin-dto';
+
 export const SALT_ROUNDS = process.env.BCRYPT_SALT_ROUNDS || 10;
 
 export const userInDb = {
@@ -10,4 +12,9 @@ export const userInDb = {
   admin: false,
   createdAt: new Date(),
   updatedAt: new Date(),
+};
+
+export const signInDto: SignInDto = {
+  email: 'maria@email.com',
+  password: 'password',
 };

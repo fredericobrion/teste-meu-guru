@@ -1,32 +1,55 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from './auth.controller';
-import { Reflector } from '@nestjs/core';
-import { UserService } from '../user/user.service';
-import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
-import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../module/prisma/prisma.service';
+import { UnauthorizedException } from '@nestjs/common';
+import { signInDto } from './mocks';
 
-describe.skip('AuthController', () => {
-  let controller: AuthController;
+describe('AuthController', () => {
+  let authController: AuthController;
+  let authService: AuthService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
       providers: [
-        Reflector,
-        AuthGuard,
-        JwtService,
-        UserService,
-        AuthService,
-        PrismaService,
+        {
+          provide: AuthService,
+          useValue: {
+            signIn: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
-    controller = module.get<AuthController>(AuthController);
+    authController = module.get<AuthController>(AuthController);
+    authService = module.get<AuthService>(AuthService);
   });
 
   it('should be defined', () => {
-    expect(controller).toBeDefined();
+    expect(authController).toBeDefined();
+  });
+
+  describe('signIn', () => {
+    it('should return an access token for valid credentials', async () => {
+      const result = { access_token: 'test_token' };
+
+      jest.spyOn(authService, 'signIn').mockResolvedValue(result);
+
+      expect(await authController.signIn(signInDto)).toEqual(result);
+      expect(authService.signIn).toHaveBeenCalledWith(
+        signInDto.email,
+        signInDto.password,
+      );
+    });
+
+    it('should throw an UnauthorizedException for invalid credentials', async () => {
+      jest
+        .spyOn(authService, 'signIn')
+        .mockRejectedValue(new UnauthorizedException());
+
+      await expect(authController.signIn(signInDto)).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
   });
 });

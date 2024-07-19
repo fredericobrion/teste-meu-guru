@@ -2,8 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
-// import { PrismaService } from '../module/prisma/prisma.service';
-// import { Reflector } from '@nestjs/core';
 import * as bcrypt from 'bcrypt';
 import { userInDb, SALT_ROUNDS } from './mocks';
 import { UnauthorizedException } from '@nestjs/common';
