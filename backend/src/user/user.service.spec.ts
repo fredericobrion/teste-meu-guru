@@ -138,24 +138,31 @@ describe('UserService', () => {
   });
 
   describe('validateUserEmail', () => {
-    it('should return user if email exists', async () => {
+    it('should throw an error if email already exists and is different from current email', async () => {
       jest
         .spyOn(prismaService.user, 'findUnique')
         .mockResolvedValue(createdUser);
 
-      const result = await service['validateUserEmail']('test@example.com');
-
-      expect(result).toEqual(createdUser);
+      await expect(
+        service['validateUserEmail'](createdUser.email, 'teste@email.com'),
+      ).rejects.toThrow(BadRequestException);
     });
 
-    it('should return null if email does not exist', async () => {
+    it('should not throw an error if email does not exist', async () => {
+      const email = 'teste@email.com';
+      const currentEmail = 'another@email.com';
       jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
 
-      const result = await service['validateUserEmail'](
-        'nonexistent@example.com',
-      );
+      await expect(
+        service['validateUserEmail'](email, currentEmail),
+      ).resolves.not.toThrow();
+    });
 
-      expect(result).toBeNull();
+    it('should not throw an error if email is the same as the current email', async () => {
+      const email = 'teste@email.com';
+      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+
+      await expect(service['validateUserEmail'](email)).resolves.not.toThrow();
     });
   });
 });
