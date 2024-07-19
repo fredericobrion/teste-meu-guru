@@ -14,7 +14,7 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ZodValidationPipe } from './zod-validation.pipe';
+import { ZodValidationPipe } from '../utils/zod-validation.pipe';
 import { createUserSchema, updateUserSchema } from './validation.schema';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { AdminAuth } from '../auth/admin-auth.decorator';
