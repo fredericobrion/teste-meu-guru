@@ -18,6 +18,8 @@ const userToUpdateDto = {
 const createdUser = {
   id: 1,
   ...userToCreateDto,
+  phone: '32991674479',
+  cpf: '11122233344',
   admin: false,
   createdAt: new Date(),
   updatedAt: new Date(),

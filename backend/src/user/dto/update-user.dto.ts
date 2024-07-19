@@ -14,7 +14,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
     description: 'The password of the user. Must have at least 6 characters',
   })
   @ApiPropertyOptional()
-  password: string;
+  password?: string;
 
   @ApiProperty({ example: 'Maria', description: 'The name of the user' })
   name: string;
