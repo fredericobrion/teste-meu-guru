@@ -4,6 +4,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import helmet from 'helmet';
 import { AuthGuard } from './auth/auth.guard';
 import { JwtService } from '@nestjs/jwt';
+import { HttpExceptionFilter } from './exception/http-exception-filter';
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
 
@@ -26,6 +27,8 @@ async function bootstrap() {
     credentials: true,
     methods: ['GET', 'POST', 'PATCH', 'DELETE'],
   });
+
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   app.useGlobalGuards(new AuthGuard(app.get(JwtService), app.get(Reflector)));
 

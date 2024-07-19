@@ -6,7 +6,7 @@ import {
   Patch,
   Param,
   Delete,
-  BadRequestException,
+  // BadRequestException,
   Query,
   UsePipes,
   UseGuards,
@@ -37,14 +37,7 @@ export class UserController {
   @ApiResponse({ status: 403, description: 'Forbidden, not admin.' })
   @UsePipes(new ZodValidationPipe(createUserSchema))
   async create(@Body() createUserDto: CreateUserDto) {
-    try {
-      return this.userService.create(createUserDto);
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw new BadRequestException(error.message);
-      }
-      throw error;
-    }
+    return this.userService.create(createUserDto);
   }
 
   @Get()
