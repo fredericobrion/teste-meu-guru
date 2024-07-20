@@ -19,7 +19,7 @@ import { createUserSchema, updateUserSchema } from './validation.schema';
 import { ThrottlerGuard } from '@nestjs/throttler';
 import { AdminAuth } from '../auth/admin-auth.decorator';
 import { AdminGuard } from '../auth/admin.guard';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 
 @Controller('user')
 @ApiTags('User')
@@ -44,6 +44,24 @@ export class UserController {
   @ApiOperation({ summary: 'Get users' })
   @ApiResponse({ status: 200, description: 'Ok' })
   @ApiResponse({ status: 401, description: 'Unauthorized, no valid token.' })
+  @ApiQuery({
+    name: 'page',
+    required: false,
+    description: 'Page number. Default value = 1',
+    example: '1',
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: false,
+    description: 'Number of items per page. Default value = 10',
+    example: '10',
+  })
+  @ApiQuery({
+    name: 'filter',
+    required: false,
+    description: 'Name or e-mail to filter',
+    example: 'name',
+  })
   async findAll(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
