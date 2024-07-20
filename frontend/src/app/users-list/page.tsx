@@ -36,9 +36,7 @@ export default function UsersListPage() {
         try {
           const response = await fetchUserData();
           setTotalUsers(response.total);
-          setUsersData(
-            response.data.filter((u: User) => u.email !== "admin@admin.com")
-          );
+          setUsersData(response.data);
         } catch (error) {
           console.error(error);
         }
@@ -47,11 +45,11 @@ export default function UsersListPage() {
           icon: "error",
           text: "Necessário estar logado",
           timer: 2000,
-          confirmButtonText: 'Voltar',
+          confirmButtonText: "Voltar",
           timerProgressBar: true,
         }).then((result) => {
           if (result.isConfirmed) {
-            router.push('/');
+            router.push("/");
           }
         });
 
@@ -70,11 +68,11 @@ export default function UsersListPage() {
   };
 
   const handleItemsPerPageChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    console.log('aqui')
     setItemsPerPage(parseInt(e.target.value, 10));
     setCurrentPage(1);
     getUsers(1, parseInt(e.target.value, 10));
   };
-
 
   const getUsers = async (
     page: number = currentPage,
@@ -84,7 +82,7 @@ export default function UsersListPage() {
     const response = await fetchUserData(page, limit, filter);
     setTotalUsers(response.total);
     setUsersData(
-      response.data.filter((u: User) => u.email !== "admin@admin.com")
+      response.data
     );
   };
 
@@ -113,12 +111,12 @@ export default function UsersListPage() {
             onChange={handleItemsPerPageChange}
             className="border border-gray-300 rounded-md px-2 py-1"
           >
-            <option value={5}>5 por página</option>
-            <option value={10}>10 por página</option>
-            <option value={20}>20 por página</option>
-            <option value={30}>30 por página</option>
-            <option value={40}>40 por página</option>
-            <option value={50}>50 por página</option>
+            <option data-testid="select-option" value={5}>5 por página</option>
+            <option data-testid="select-option" value={10}>10 por página</option>
+            <option data-testid="select-option" value={20}>20 por página</option>
+            <option data-testid="select-option" value={30}>30 por página</option>
+            <option data-testid="select-option" value={40}>40 por página</option>
+            <option data-testid="select-option" value={50}>50 por página</option>
           </select>
         </div>
         <p className="mb-4 text-gray-600">
@@ -165,7 +163,6 @@ export default function UsersListPage() {
           >
             <ChevronLeftIcon className="size-4 text-white hover:text-gray-600 cursor-pointer" />
           </button>
-
         )}
         {totalPages > 3 && currentPage > 1 && (
           <button
@@ -190,17 +187,16 @@ export default function UsersListPage() {
           </button>
         )}
         {currentPage < totalPages && (
-        <button
-          onClick={() => handlePageChange(currentPage + 1)}
-          className="px-4 py-2 mx-1 rounded-md border bg-purple-300 text-white hover:bg-purple-600"
-          disabled={currentPage === totalPages}
-        >
-          <ChevronRightIcon className="size-4 text-white hover:text-gray-600 cursor-pointer" />
-
-        </button>
-
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            className="px-4 py-2 mx-1 rounded-md border bg-purple-300 text-white hover:bg-purple-600"
+            disabled={currentPage === totalPages}
+            data-testid="next-page-btn"
+          >
+            <ChevronRightIcon className="size-4 text-white hover:text-gray-600 cursor-pointer" />
+          </button>
         )}
-        {(currentPage + 1 < totalPages) && (
+        {currentPage + 1 < totalPages && (
           <button
             onClick={() => handlePageChange(totalPages)}
             className="px-4 py-2 mx-1 rounded-md border bg-purple-300 text-white hover:bg-purple-600"

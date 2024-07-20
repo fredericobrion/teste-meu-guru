@@ -131,19 +131,21 @@ export default function TableRow({
           <input
             type="email"
             value={email}
+            data-testid="email-input"
             className={`rounded-md border px-2 py-1 w-full focus:shadow-purple-500 focus:shadow-sm focus:outline-none ${
               errors.email ? "border-red-500" : "border-gray-300"
             }`}
             onChange={handleChangeEmail}
           />
         ) : (
-          email
+          <p data-testid="email-value">{email}</p>
         )}
       </td>
       <td className="py-2 px-4 border-b w-1/5 align-middle">
         {editing ? (
           <input
             type="text"
+            data-testid="name-input"
             value={name}
             className={`rounded-md border px-2 py-1 w-full focus:shadow-purple-500 focus:shadow-sm focus:outline-none ${
               errors.name ? "border-red-500" : "border-gray-300"
@@ -151,13 +153,14 @@ export default function TableRow({
             onChange={handleChangeName}
           />
         ) : (
-          name
+          <p data-testid="name-value">{name}</p>
         )}
       </td>
       <td className="py-2 px-4 border-b w-1/5 align-middle">
         {editing ? (
           <input
             type="text"
+            data-testid="cpf-input"
             value={cpf}
             className={`rounded-md border px-2 py-1 w-full focus:shadow-purple-500 focus:shadow-sm focus:outline-none ${
               errors.cpf ? "border-red-500" : "border-gray-300"
@@ -165,12 +168,13 @@ export default function TableRow({
             onChange={handleChangeCpf}
           />
         ) : (
-          cpf
+          <p data-testid="cpf-value">{cpf}</p>
         )}
       </td>
       <td className="py-2 px-4 border-b w-1/5 align-middle">
         {editing ? (
           <input
+            data-testid="phone-input"
             type="text"
             value={phone}
             className={`rounded-md border px-2 py-1 w-full focus:shadow-purple-500 focus:shadow-sm focus:outline-none ${
@@ -179,13 +183,14 @@ export default function TableRow({
             onChange={handleChangePhone}
           />
         ) : (
-          phone
+          <p data-testid="phone-value">{phone}</p>
         )}
       </td>
       <td className="py-2 px-4 border-b w-1/5 align-middle">
         {editing ? (
           <select
             value={admin ? "Administrador" : "Usuário"}
+            data-testid="admin-select"
             onChange={(e) =>
               handleChangeAdmin(e.target.value === "Administrador")
             }
@@ -207,6 +212,7 @@ export default function TableRow({
               ? "opacity-50 cursor-not-allowed"
               : "hover:bg-blue-600 hover:scale-105 cursor-pointer"
           }`}
+          data-testid="edit-btn"
           disabled={validsInputs || !isAdmin}
           onClick={() => (editing ? handleUpdate() : setEditing(!editing))}
         >
@@ -215,6 +221,7 @@ export default function TableRow({
         <button
           onClick={() => (editing ? handleCancelEdit() : handleDelete())}
           disabled={!isAdmin}
+          data-testid="remove-btn"
           className={`bg-red-500 text-white px-4 py-2 rounded block w-full ${
             !isAdmin
               ? "opacity-50 cursor-not-allowed"
