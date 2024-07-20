@@ -1,7 +1,7 @@
 # Teste técnico Meu Gutu - Back-End
 
 ## 📝 Descrição:
-Uma API RESTful que permite o gerenciamento de usuários. Todas as rotas, com exceção da de login e Health check, necessitam de autenticação. As rotas, com exceção da de listagem de usuários, também são proptegidas por autorização. Ao iniciar o projeto o banco de dados será populado com alguns usuários, sendo um deles um administrador. A senha para login como administrador será definida no arquivo ```.env``` e o e-mail é ```admin@admin.com```.  
+Uma API RESTful que permite o gerenciamento de usuários. Todas as rotas, com exceção da de login e Health check, necessitam de autenticação. As rotas, com exceção da de listagem de usuários, também são proptegidas por autorização. Ao iniciar o projeto o banco de dados será populado com alguns usuários, sendo um deles um administrador. A senha para login como administrador cadastrado será definida no arquivo ```.env``` e por padrão é ```password```. O e-mail é ```admin@admin.com```.  
 
 ## 💻 Tecnologias utilizadas:
 - <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a>
