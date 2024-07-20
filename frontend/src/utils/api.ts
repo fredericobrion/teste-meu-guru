@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { getTokenCookie, setTokenCookie } from "./cookieUtils";
 
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
@@ -36,8 +36,12 @@ export const login = async (email: string, password: string) => {
 
     return;
   } catch (error) {
-    if (error.response?.status) {
-      throw new Error("E-mail e/ou senha inválidos");
+    if (error instanceof AxiosError && error.response) {
+      if (error.response.data.errorMessage) {
+        throw new Error(error.response.data.errorMessage);
+      } else {
+        throw new Error("Erro desconhecido");
+      }
     } else {
       throw new Error("Erro ao comunicar com o servidor");
     }
@@ -72,10 +76,15 @@ export const createUser = async (
     });
     return response.data;
   } catch (error) {
-    if (error.response?.data?.errorMessage) {
-      throw new Error(error.response.data.errorMessage);
+    if (error instanceof AxiosError && error.response) {
+      if (error.response.data) {
+        throw new Error(error.response.data.errorMessage);
+      } else {
+        throw new Error("Erro desconhecido");
+      }
+    } else {
+      throw new Error("Erro ao comunicar com o servidor");
     }
-    throw new Error("Erro no servidor");
   }
 };
 
@@ -106,9 +115,14 @@ export const updateUser = async (
     });
     return response.data;
   } catch (error) {
-    if (error.response.status) {
-      throw new Error(error.response.data.message);
+    if (error instanceof AxiosError && error.response) {
+      if (error.response.data) {
+        throw new Error(error.response.data.errorMessage);
+      } else {
+        throw new Error("Erro desconhecido");
+      }
+    } else {
+      throw new Error("Erro ao comunicar com o servidor");
     }
-    throw new Error("Erro no servidor");
   }
 };

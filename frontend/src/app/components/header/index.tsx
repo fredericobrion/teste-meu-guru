@@ -5,13 +5,13 @@ import { removeTokenCookie, getTokenCookie } from "../../../utils/cookieUtils";
 import { useEffect, useState } from "react";
 import logo from '../../../../public/logo.png';
 import Image from "next/image";
+import { Token } from '../../../types/token';
 
 function Header() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const [decode, setDecode] = useState({});
-
+  const [decode, setDecode] = useState<Token | null>(null);
 
   useEffect(() => {
     const getToken = () => {
@@ -19,7 +19,7 @@ function Header() {
         const token = getTokenCookie()!;
 
         if (token) {
-          setDecode(jwtDecode(token));
+          setDecode(jwtDecode(token) as Token);
         }
       }
     };

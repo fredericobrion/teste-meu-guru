@@ -2,7 +2,7 @@
 import { FormEvent, useState, useEffect } from "react";
 import { login } from "../utils/api";
 import { useRouter } from "next/navigation";
-import { setTokenCookie, removeTokenCookie } from "../utils/cookieUtils";
+import { removeTokenCookie } from "../utils/cookieUtils";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { validateEmail } from "../utils/validateInputs";
 
@@ -63,7 +63,11 @@ export default function Home() {
       
       router.push("/users-list");
     } catch (error) {
-      setLoginError(error.message)
+      if (error instanceof Error) {
+        setLoginError(error.message)
+      } else {
+        setLoginError("Ocorreu um erro inesperado.")
+      }
     }
   };
 

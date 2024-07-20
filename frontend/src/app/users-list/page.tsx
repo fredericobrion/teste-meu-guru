@@ -13,6 +13,7 @@ import {
   ChevronDoubleLeftIcon,
 } from "@heroicons/react/24/outline";
 import Swal from "sweetalert2";
+import { Token } from '../../types/token';
 
 export default function UsersListPage() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function UsersListPage() {
   useEffect(() => {
     const fetch = async () => {
       if (getTokenCookie()) {
-        const decoded = jwtDecode(getTokenCookie()!);
+        const decoded = jwtDecode(getTokenCookie()!) as Token;
 
         setIsAdmin(decoded.admin);
 

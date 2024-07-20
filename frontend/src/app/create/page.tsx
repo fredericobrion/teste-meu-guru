@@ -12,6 +12,7 @@ import { getTokenCookie } from "../../utils/cookieUtils";
 import { jwtDecode } from "jwt-decode";
 import { createUser } from "../../utils/api";
 import Swal from "sweetalert2";
+import { Token } from "../../types/token";
 
 export default function CreatePage() {
   const router = useRouter();
@@ -34,7 +35,7 @@ export default function CreatePage() {
   useEffect(() => {
     const fetch = async () => {
       if (getTokenCookie()) {
-        const decoded = jwtDecode(getTokenCookie()!);
+        const decoded = jwtDecode(getTokenCookie()!) as Token;
 
         if (!decoded.admin) {
           setError("Necessário ser administrador para criar usuários");
@@ -46,11 +47,11 @@ export default function CreatePage() {
           icon: "error",
           text: "Necessário estar logado",
           timer: 2000,
-          confirmButtonText: 'Voltar',
+          confirmButtonText: "Voltar",
           timerProgressBar: true,
         }).then((result) => {
           if (result.isConfirmed) {
-            router.push('/');
+            router.push("/");
           }
         });
 
@@ -141,7 +142,11 @@ export default function CreatePage() {
 
       router.push("/users-list");
     } catch (error) {
-      setError(error.message)
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Ocorreu um erro inesperado");
+      }
     }
   };
 
@@ -223,10 +228,17 @@ export default function CreatePage() {
             disabled={!isAdmin}
             id="user"
             name="cargo"
-            className={`form-radio h-5 w-5 text-purple-600 ${isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+            className={`form-radio h-5 w-5 text-purple-600 ${
+              isAdmin ? "cursor-pointer" : "cursor-not-allowed"
+            }`}
             onChange={() => setAdmin(false)}
           />
-          <label htmlFor="user" className={`ml-2 ${isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
+          <label
+            htmlFor="user"
+            className={`ml-2 ${
+              isAdmin ? "cursor-pointer" : "cursor-not-allowed"
+            }`}
+          >
             Usuário
           </label>
           <input
@@ -235,10 +247,17 @@ export default function CreatePage() {
             type="radio"
             id="admin"
             name="cargo"
-            className={`form-radio h-5 w-5 text-purple-600 ml-8 ${isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+            className={`form-radio h-5 w-5 text-purple-600 ml-8 ${
+              isAdmin ? "cursor-pointer" : "cursor-not-allowed"
+            }`}
             onChange={() => setAdmin(true)}
           />
-          <label htmlFor="admin" className={`ml-2 ${isAdmin ? 'cursor-pointer' : 'cursor-not-allowed'}`}>
+          <label
+            htmlFor="admin"
+            className={`ml-2 ${
+              isAdmin ? "cursor-pointer" : "cursor-not-allowed"
+            }`}
+          >
             Administrador
           </label>
         </div>
@@ -253,11 +272,7 @@ export default function CreatePage() {
         >
           Criar
         </button>
-        {error && (
-          <p className="text-red-600 py-4 text-xl">
-            {error}
-          </p>
-        )}
+        {error && <p className="text-red-600 py-4 text-xl">{error}</p>}
       </form>
     </div>
   );
