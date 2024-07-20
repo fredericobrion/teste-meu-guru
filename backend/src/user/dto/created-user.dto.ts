@@ -8,3 +8,15 @@ export class UserToReturnDto {
   createdAt: Date;
   updatedAt: Date;
 }
+
+export class UserToReturnWithPasswordDto {
+  id: number;
+  email: string;
+  name: string;
+  phone: string;
+  cpf: string;
+  admin: boolean;
+  password: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

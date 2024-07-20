@@ -1,19 +1,24 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { PrismaService } from '../module/prisma/prisma.service';
-import { UserToReturnDto } from './dto/created-user.dto';
+import {
+  UserToReturnDto,
+  UserToReturnWithPasswordDto,
+} from './dto/created-user.dto';
 import * as bcrypt from 'bcrypt';
-import { Prisma, User } from '@prisma/client';
 import FormatTransformer from '../utils/format-transformer';
+import { UserRepository } from '../repository/user-repository.interface';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @Inject('UserRepository') private readonly userRepository: UserRepository,
+  ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserToReturnDto> {
     const { email, password, name, phone, cpf } = createUserDto;
@@ -22,17 +27,15 @@ export class UserService {
 
     const encryptedPassword = await this.encryptPassword(password);
 
-    const createdUser = await this.prisma.user.create({
-      data: {
-        email,
-        password: encryptedPassword,
-        name,
-        phone: FormatTransformer.unformatPhone(phone),
-        cpf: FormatTransformer.unformatCpf(cpf),
-      },
+    const createdUser = await this.userRepository.create({
+      email,
+      password: encryptedPassword,
+      name,
+      phone: FormatTransformer.unformatPhone(phone),
+      cpf: FormatTransformer.unformatCpf(cpf),
     });
 
-    return this.toUserToReturnDto(createdUser);
+    return createdUser;
   }
 
   async findAll(
@@ -45,35 +48,16 @@ export class UserService {
     limit: number;
     data: UserToReturnDto[];
   }> {
-    const skip = (page - 1) * limit;
-    const where: Prisma.UserWhereInput = {
-      AND: [
-        filter
-          ? {
-              OR: [
-                { name: { contains: filter, mode: 'insensitive' } },
-                { email: { contains: filter, mode: 'insensitive' } },
-              ],
-            }
-          : {},
-        { email: { not: 'admin@admin.com' } },
-      ],
-    };
+    const usersInDb = await this.userRepository.findAll(page, limit, filter);
 
-    const users = await this.prisma.user.findMany({ where, skip, take: limit });
-
-    const usersToReturn = users.map((u) => this.toUserToReturnDto(u));
-
-    const totalUsers = await this.prisma.user.count({ where });
-
-    return { total: totalUsers, page, limit, data: usersToReturn };
+    return { total: usersInDb.total, page, limit, data: usersInDb.data };
   }
 
   async update(
     id: number,
     updateUserDto: UpdateUserDto,
   ): Promise<UserToReturnDto> {
-    const userInDb = await this.prisma.user.findUnique({ where: { id } });
+    const userInDb = await this.userRepository.findById(id);
 
     if (!userInDb) {
       throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
@@ -90,28 +74,27 @@ export class UserService {
       );
     }
 
-    const updatedUser = await this.prisma.user.update({
-      where: { id },
-      data: updateUserDto,
-    });
+    const updatedUser = await this.userRepository.update(id, updateUserDto);
 
-    return this.toUserToReturnDto(updatedUser);
+    return updatedUser;
   }
 
   async remove(id: number): Promise<{ message: string }> {
-    const userInDb = await this.prisma.user.findUnique({ where: { id } });
+    const userInDb = await this.userRepository.findById(id);
 
     if (!userInDb) {
       throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
 
-    await this.prisma.user.delete({ where: { id } });
+    await this.userRepository.remove(id);
 
     return { message: 'Usuário excluido' };
   }
 
-  async findByEmail(email: string): Promise<User | null> {
-    const user = await this.prisma.user.findUnique({ where: { email } });
+  async findByEmail(
+    email: string,
+  ): Promise<UserToReturnWithPasswordDto | null> {
+    const user = await this.userRepository.findByEmail(email);
 
     return user;
   }
@@ -121,9 +104,7 @@ export class UserService {
     currentEmail?: string,
   ): Promise<void> {
     if (email !== currentEmail) {
-      const existingUser = await this.prisma.user.findUnique({
-        where: { email },
-      });
+      const existingUser = await this.userRepository.findByEmail(email);
 
       if (existingUser) {
         throw new BadRequestException('E-mail já cadastrado');
@@ -135,18 +116,5 @@ export class UserService {
     const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS || '10', 10);
 
     return bcrypt.hash(password, SALT_ROUNDS);
-  }
-
-  private toUserToReturnDto(user): UserToReturnDto {
-    return {
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      phone: FormatTransformer.formatPhone(user.phone),
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      cpf: FormatTransformer.formatCpf(user.cpf),
-      admin: user.admin,
-    };
   }
 }
