@@ -3,13 +3,6 @@
 ## 📝 Descrição:
 Uma API RESTful que permite o gerenciamento de usuários. Todas as rotas, com exceção da de login e Health check, necessitam de autenticação. As rotas, com exceção da de listagem de usuários, também são proptegidas por autorização. Ao iniciar o projeto o banco de dados será populado com alguns usuários, sendo um deles um administrador. A senha para login como administrador será definida no arquivo ```.env``` e o e-mail é ```admin@admin.com```.  
 
-A aplicação contém registro de logs. Os logs são inscritos no arquivo ```combined.log```, que fica no diretório ```logs```. Com os logs é possível verificar:
-- O tipo e a rota da requisição feita;
-- O status HTTP da requisição;
-- O tempo de execução;
-- O ID do usuário que fez a rquisição;
-- O corpo da requisição com senhas ocultadas.
-
 ## 💻 Tecnologias utilizadas:
 - <a href="https://www.typescriptlang.org/" target="_blank">TypeScript</a>
 - <a href="https://nodejs.org/en" target="_blank">NodeJS</a>
@@ -46,6 +39,14 @@ A aplicação contém registro de logs. Os logs são inscritos no arquivo ```com
   ```
   npm start
   ```
+## 🗒️ Logs
+A aplicação contém registro de logs. Os logs são inscritos no arquivo ```combined.log```, que fica no diretório ```logs```. Com os logs é possível verificar:
+- O tipo e a rota da requisição feita;
+- O status HTTP da requisição;
+- O tempo de execução;
+- O ID do usuário que fez a rquisição;
+- O corpo da requisição com senhas ocultadas.
+
 
 ## 🧪 Testes
 A aplicação possui testes unitários para verificar o seu funcionamento. Dentro do diretório ```backend``` utilize o comando ```npm test``` para executa-los.
@@ -55,6 +56,7 @@ A aplicação possui testes unitários para verificar o seu funcionamento. Dentr
 Caso prefira, a aplicação possui suas rotas documentadas por meio do <a href="https://swagger.io/" target="_blank">Swagger</a> e pode ser accessada em <a href="http://localhost:3001/api" target="_blank">http://localhost:3001/api</a>.
 
 1. Health check através do endpoint ```GET /```
+
 2. Login através do endpoint ```/auth/login```
    - O corpo da requisição deverá ser no seguinte formato:
      ```
