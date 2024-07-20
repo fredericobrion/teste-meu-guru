@@ -20,22 +20,21 @@ Uma API RESTful que permite o gerenciamento de usuários. Todas as rotas, com ex
 ## ⚙️ Iniciando a aplicação:
 1. Verifique se está dentro do diretório ```backend``` e crie o arquivo que irá conter as variáveis de ambiente.
   ```
-  touch .env
+  cp .env.example .env
   ```
-2. Utilize o arquivo ```.env.example``` para preencher o ```.env```
-3. Suba o container que conterá o banco de dados da aplicação:
+2. Suba o container que conterá o banco de dados da aplicação:
   ```
   docker-compose up -d --build
   ```
-4. Instale as dependências:
+3. Instale as dependências:
   ```
   npm install
   ```
-5. Crie as tabelas, aplique as migrations e popule o banco:
+4. Crie as tabelas, aplique as migrations e popule o banco:
   ```
   npm run db:create
   ```
-6. Inicie a aplicação:
+5. Inicie a aplicação:
   ```
   npm start
   ```
