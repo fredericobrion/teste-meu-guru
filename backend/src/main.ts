@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { HttpExceptionFilter } from './exception/http-exception-filter';
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const PORT = process.env.PORT || 3001;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -32,6 +33,6 @@ async function bootstrap() {
 
   app.useGlobalGuards(new AuthGuard(app.get(JwtService), app.get(Reflector)));
 
-  await app.listen(3001);
+  await app.listen(PORT);
 }
 bootstrap();
