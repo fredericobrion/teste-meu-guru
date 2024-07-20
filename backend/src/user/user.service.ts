@@ -23,7 +23,11 @@ export class UserService {
   async create(createUserDto: CreateUserDto): Promise<UserToReturnDto> {
     const { email, password, name, phone, cpf } = createUserDto;
 
-    await this.validateUserEmail(email);
+    const userInDb = await this.userRepository.findByEmail(email);
+
+    if (userInDb) {
+      throw new BadRequestException('E-mail já cadastrado');
+    }
 
     const encryptedPassword = await this.encryptPassword(password);
 
@@ -35,7 +39,11 @@ export class UserService {
       cpf: FormatTransformer.unformatCpf(cpf),
     });
 
-    return createdUser;
+    return {
+      ...createdUser,
+      cpf: FormatTransformer.formatCpf(createdUser.cpf),
+      phone: FormatTransformer.formatPhone(createdUser.phone),
+    };
   }
 
   async findAll(
@@ -50,7 +58,13 @@ export class UserService {
   }> {
     const usersInDb = await this.userRepository.findAll(page, limit, filter);
 
-    return { total: usersInDb.total, page, limit, data: usersInDb.data };
+    const usersToReturn = usersInDb.data.map((u) => ({
+      ...u,
+      cpf: FormatTransformer.formatCpf(u.cpf),
+      phone: FormatTransformer.formatPhone(u.phone),
+    }));
+
+    return { total: usersInDb.total, page, limit, data: usersToReturn };
   }
 
   async update(
@@ -75,6 +89,9 @@ export class UserService {
     }
 
     const updatedUser = await this.userRepository.update(id, updateUserDto);
+
+    updatedUser.cpf = FormatTransformer.formatCpf(updatedUser.cpf);
+    updatedUser.phone = FormatTransformer.formatPhone(updatedUser.phone);
 
     return updatedUser;
   }

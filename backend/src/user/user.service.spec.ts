@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserService } from './user.service';
-import { PrismaService } from '../module/prisma/prisma.service';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   userToCreateDto,
@@ -10,18 +9,32 @@ import {
   usersInDb,
   userToUpdateDto,
 } from './mocks';
+import { UserRepository } from '../repository/user-repository.interface';
 
 describe('UserService', () => {
   let service: UserService;
-  let prismaService: PrismaService;
+  let userRepository: UserRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService, PrismaService],
+      providers: [
+        UserService,
+        {
+          provide: 'UserRepository',
+          useValue: {
+            create: jest.fn(),
+            findAll: jest.fn(),
+            findById: jest.fn(),
+            update: jest.fn(),
+            remove: jest.fn(),
+            findByEmail: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<UserService>(UserService);
-    prismaService = module.get<PrismaService>(PrismaService);
+    userRepository = module.get<UserRepository>('UserRepository');
   });
 
   it('should be defined', () => {
@@ -30,7 +43,7 @@ describe('UserService', () => {
 
   describe('create', () => {
     it('should create a new user', async () => {
-      jest.spyOn(prismaService.user, 'create').mockResolvedValue(createdUser);
+      jest.spyOn(userRepository, 'create').mockResolvedValue(createdUser);
 
       const result = await service.create(userToCreateDto);
 
@@ -38,7 +51,7 @@ describe('UserService', () => {
     });
 
     it('should throw an error if email already exists', async () => {
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue({
+      jest.spyOn(userRepository, 'findByEmail').mockResolvedValue({
         ...userToCreateDto,
         admin: false,
         id: 1,
@@ -58,10 +71,9 @@ describe('UserService', () => {
       const limit = 2;
       const filter = 'teste';
 
-      jest.spyOn(prismaService.user, 'findMany').mockResolvedValue(usersInDb);
       jest
-        .spyOn(prismaService.user, 'count')
-        .mockResolvedValue(usersList.length);
+        .spyOn(userRepository, 'findAll')
+        .mockResolvedValue({ total: usersList.length, data: usersInDb });
 
       const result = await service.findAll(page, limit, filter);
 
@@ -77,10 +89,8 @@ describe('UserService', () => {
   describe('remove', () => {
     it('should delete a user by ID', async () => {
       const userId = 1;
-      jest
-        .spyOn(prismaService.user, 'findUnique')
-        .mockResolvedValue(usersInDb[0]);
-      jest.spyOn(prismaService.user, 'delete').mockResolvedValue(usersInDb[0]);
+      jest.spyOn(userRepository, 'findById').mockResolvedValue(usersInDb[0]);
+      jest.spyOn(userRepository, 'remove').mockResolvedValue();
 
       const result = await service.remove(userId);
 
@@ -89,7 +99,7 @@ describe('UserService', () => {
 
     it('should throw an error if user does not exist for delete', async () => {
       const userId = 999;
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+      jest.spyOn(userRepository, 'findById').mockResolvedValue(null);
 
       await expect(service.remove(userId)).rejects.toThrow(NotFoundException);
     });
@@ -99,11 +109,9 @@ describe('UserService', () => {
     it('should update a user by ID', async () => {
       const userId = 2;
 
-      jest
-        .spyOn(prismaService.user, 'findUnique')
-        .mockResolvedValue(usersInDb[1]);
+      jest.spyOn(userRepository, 'findById').mockResolvedValue(usersInDb[1]);
 
-      jest.spyOn(prismaService.user, 'update').mockResolvedValue(usersInDb[1]);
+      jest.spyOn(userRepository, 'update').mockResolvedValue(usersInDb[1]);
 
       const result = await service.update(userId, userToUpdateDto);
 
@@ -113,7 +121,7 @@ describe('UserService', () => {
     it('should throw an error if user does not exist for update', async () => {
       const userId = 999;
 
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+      jest.spyOn(userRepository, 'findById').mockResolvedValue(null);
 
       await expect(service.update(userId, userToUpdateDto)).rejects.toThrow(
         NotFoundException,
@@ -123,12 +131,13 @@ describe('UserService', () => {
     it('should throw an error if email already exists when updating user', async () => {
       const userId = 999;
 
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValueOnce({
+      jest.spyOn(userRepository, 'findById').mockResolvedValueOnce({
         ...usersInDb[0],
       });
 
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValueOnce({
+      jest.spyOn(userRepository, 'findByEmail').mockResolvedValueOnce({
         ...usersInDb[1],
+        password: 'senha',
       });
 
       await expect(service.update(userId, userToUpdateDto)).rejects.toThrow(
@@ -140,8 +149,8 @@ describe('UserService', () => {
   describe('validateUserEmail', () => {
     it('should throw an error if email already exists and is different from current email', async () => {
       jest
-        .spyOn(prismaService.user, 'findUnique')
-        .mockResolvedValue(createdUser);
+        .spyOn(userRepository, 'findByEmail')
+        .mockResolvedValue({ ...createdUser, password: 'senha' });
 
       await expect(
         service['validateUserEmail'](createdUser.email, 'teste@email.com'),
@@ -151,7 +160,7 @@ describe('UserService', () => {
     it('should not throw an error if email does not exist', async () => {
       const email = 'teste@email.com';
       const currentEmail = 'another@email.com';
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+      jest.spyOn(userRepository, 'findByEmail').mockResolvedValue(null);
 
       await expect(
         service['validateUserEmail'](email, currentEmail),
@@ -160,7 +169,7 @@ describe('UserService', () => {
 
     it('should not throw an error if email is the same as the current email', async () => {
       const email = 'teste@email.com';
-      jest.spyOn(prismaService.user, 'findUnique').mockResolvedValue(null);
+      jest.spyOn(userRepository, 'findByEmail').mockResolvedValue(null);
 
       await expect(service['validateUserEmail'](email)).resolves.not.toThrow();
     });

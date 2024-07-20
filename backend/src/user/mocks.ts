@@ -24,7 +24,8 @@ const userToUpdateDto = {
 
 const createdUser = {
   id: 1,
-  ...userToCreateDto,
+  email: ANA_EMAL,
+  name: 'ana',
   phone: UNFORMATED_PHONE,
   cpf: UNFORMATED_CPF,
   admin: false,
@@ -57,13 +58,11 @@ const secondUser: UserToReturnDto = {
 const usersInDb = [
   {
     ...userToReturn,
-    password: userToCreateDto.password,
     phone: UNFORMATED_PHONE,
     cpf: UNFORMATED_CPF,
   },
   {
     ...secondUser,
-    password: userToCreateDto.password,
     phone: UNFORMATED_PHONE,
     cpf: UNFORMATED_CPF,
   },

@@ -8,7 +8,6 @@ import {
   UserToReturnWithPasswordDto,
 } from '../user/dto/created-user.dto';
 import { Prisma, User } from '@prisma/client';
-import FormatTransformer from '../utils/format-transformer';
 
 @Injectable()
 export class PrismaUserRepository implements UserRepository {
@@ -77,10 +76,10 @@ export class PrismaUserRepository implements UserRepository {
       id: user.id,
       email: user.email,
       name: user.name,
-      phone: FormatTransformer.formatPhone(user.phone),
+      phone: user.phone,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-      cpf: FormatTransformer.formatCpf(user.cpf),
+      cpf: user.cpf,
       admin: user.admin,
     };
   }
