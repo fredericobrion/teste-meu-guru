@@ -20,7 +20,7 @@ export class AuthService {
       !foundUser ||
       !(await this.validatePassword(password, foundUser.password))
     ) {
-      throw new UnauthorizedException('Wrong email and/or password');
+      throw new UnauthorizedException('E-mail e/ou senha incorretos');
     }
 
     const payload = this.createTokenPayload(foundUser);
