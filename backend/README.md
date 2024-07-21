@@ -38,6 +38,12 @@ Uma API RESTful que permite o gerenciamento de usuários. Todas as rotas, com ex
   ```
   npm start
   ```
+## 🔒 Autorização e Autenticação
+Todas as rotas, com exceção da de login e Health check, necessitam de autenticação. O token de autenticação será recebido após login bem sucedido. Para as rotas protegidas é necessário enviar o token no Header da requisição em 'Authorization' no formato ```"Bearer token"```.
+
+
+Há 2 níveis de papéis para os usuários, Administrador e Usuário. Por padrão, um usuário será criado com papel de usuário. É necessário papel de Administrador para criar, editar e excluir usuários.
+
 ## 🗒️ Logs
 A aplicação contém registro de logs. Os logs são inscritos no arquivo ```combined.log```, que fica no diretório ```logs```. Com os logs é possível verificar:
 - O tipo e a rota da requisição feita;
