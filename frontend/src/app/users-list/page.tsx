@@ -125,7 +125,8 @@ export default function UsersListPage() {
               </button>
               <button
                 onClick={() => handleClear()}
-                className="bg-red-500 text-white rounded-md px-4 py-1 hover:bg-red-600"
+                disabled={filterValue.length === 0}
+                className={`bg-red-500 text-white rounded-md px-4 py-1 hover:bg-red-600 disabled:bg-red-300 disabled:cursor-not-allowed`}
               >
                 Limpar
               </button>
