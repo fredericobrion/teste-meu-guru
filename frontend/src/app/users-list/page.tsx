@@ -26,22 +26,14 @@ export default function UsersListPage() {
   const [totalUsers, setTotalUsers] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [filterValue, setFilterValue] = useState("");
+  const [error, setError] = useState("");
 
   const totalPages = Math.ceil(totalUsers / itemsPerPage);
 
   useEffect(() => {
     const fetch = async () => {
       if (decoded) {
-        setIsAdmin(decoded.admin);
-
-        try {
-          const response = await fetchUserData();
-          setTotalUsers(response.total);
-          setUsersData(response.data);
-          setLoading(false);
-        } catch (error) {
-          console.error(error);
-        }
+        getUsers();
       } else {
         Swal.fire({
           icon: "error",
@@ -83,11 +75,22 @@ export default function UsersListPage() {
     limit: number = itemsPerPage,
     filter: string = filterValue
   ) => {
-    const response = await fetchUserData(page, limit, filter);
-    setTotalUsers(response.total);
-    setUsersData(
-      response.data
-    );
+    try {
+      setLoading(true);
+      const response = await fetchUserData(page, limit, filter);
+      setTotalUsers(response.total);
+      setUsersData(
+        response.data
+      );
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError("Ocorreu um erro inesperado.");
+      }
+    }
   };
 
   return loading ? <Loading /> : (
@@ -209,6 +212,9 @@ export default function UsersListPage() {
           </button>
         )}
       </div>
+      {error && (
+        <p>{error}</p>
+      )}
     </div>
   );
 }
