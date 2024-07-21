@@ -1,3 +1,5 @@
+import { User } from "../../types/user";
+
 export const usersList = [
   {
     id: 1,

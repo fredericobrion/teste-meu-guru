@@ -35,7 +35,7 @@ function Header() {
         </div>
       )}
       <div className="flex-grow flex justify-center">
-        <Image src={logo} alt="Logo Meu Guru" width={160} height={120}/>
+        <Image src={logo} alt="Logo Meu Guru" width={160} height={120} data-testid="logo"/>
       </div>
       <div className="flex space-x-2">
         {pathname !== "/" && decoded && (

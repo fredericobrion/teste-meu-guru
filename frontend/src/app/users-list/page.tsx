@@ -34,6 +34,7 @@ export default function UsersListPage() {
   useEffect(() => {
     const fetch = async () => {
       if (decoded) {
+        setIsAdmin(decoded.admin);
         getUsers();
       } else {
         Swal.fire({
