@@ -15,6 +15,7 @@ A aplicação é uma interface que permite o gerenciamento de usuários de uma b
 - <a href="https://heroicons.com/">Heroicons</a>
 - <a href="https://vitest.dev/">vitest</a>
 - <a href="https://www.npmjs.com/package/jwt-decode">jwt-decode</a>
+- <a href="https://www.davidhu.io/react-spinners/">react-spinners</a>
 
 ## ⚙️ Iniciando a aplicação:
 1. Verifique se está dentro do diretório ```frontend``` e crie o arquivo que irá conter as variáveis de ambiente:
