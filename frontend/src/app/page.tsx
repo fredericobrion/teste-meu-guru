@@ -2,12 +2,17 @@
 import { FormEvent, useState, useEffect } from "react";
 import { login } from "../utils/api";
 import { useRouter } from "next/navigation";
-import { removeTokenCookie } from "../utils/cookieUtils";
+import { removeTokenCookie, setTokenCookie } from "../utils/cookieUtils";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { validateEmail } from "../utils/validateInputs";
+import { useAppContext } from '../context/context';
+import { jwtDecode } from 'jwt-decode';
+import { Token } from "../types/token";
 
 export default function Home() {
   const router = useRouter();
+
+  const { setDecoded } = useAppContext();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,6 +24,7 @@ export default function Home() {
   useEffect(() => {
     const cleanCookie = () => {
       removeTokenCookie();
+      setDecoded(null);
     }
 
     cleanCookie();
@@ -59,7 +65,12 @@ export default function Home() {
     }
     
     try {
-      await login(email, password);
+      const token = await login(email, password);
+
+      setTokenCookie(token);
+      const decodedToken = jwtDecode(token) as Token;
+
+      setDecoded(decodedToken);
       
       router.push("/users-list");
     } catch (error) {

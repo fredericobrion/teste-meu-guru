@@ -1,11 +1,9 @@
 "use client";
 import { ChangeEvent, useEffect, useState } from "react";
-import { getTokenCookie } from "../../utils/cookieUtils";
 import { fetchUserData } from "../../utils/api";
 import { useRouter } from "next/navigation";
 import { User } from "../../types/user";
 import TableRow from "../components/tableRow";
-import { jwtDecode } from "jwt-decode";
 import {
   ChevronDoubleRightIcon,
   ChevronRightIcon,
@@ -13,10 +11,12 @@ import {
   ChevronDoubleLeftIcon,
 } from "@heroicons/react/24/outline";
 import Swal from "sweetalert2";
-import { Token } from '../../types/token';
+import { useAppContext } from '../../context/context';
 
 export default function UsersListPage() {
   const router = useRouter();
+
+  const { decoded } = useAppContext();
 
   const [usersData, setUsersData] = useState<User[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -29,9 +29,7 @@ export default function UsersListPage() {
 
   useEffect(() => {
     const fetch = async () => {
-      if (getTokenCookie()) {
-        const decoded = jwtDecode(getTokenCookie()!) as Token;
-
+      if (decoded) {
         setIsAdmin(decoded.admin);
 
         try {
@@ -69,7 +67,6 @@ export default function UsersListPage() {
   };
 
   const handleItemsPerPageChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    console.log('aqui')
     setItemsPerPage(parseInt(e.target.value, 10));
     setCurrentPage(1);
     getUsers(1, parseInt(e.target.value, 10));

@@ -13,9 +13,12 @@ import { jwtDecode } from "jwt-decode";
 import { createUser } from "../../utils/api";
 import Swal from "sweetalert2";
 import { Token } from "../../types/token";
+import { useAppContext } from "../../context/context";
 
 export default function CreatePage() {
   const router = useRouter();
+
+  const { decoded } = useAppContext();
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -34,14 +37,12 @@ export default function CreatePage() {
 
   useEffect(() => {
     const fetch = async () => {
-      if (getTokenCookie()) {
-        const decoded = jwtDecode(getTokenCookie()!) as Token;
-
+      if (decoded) {
         if (!decoded.admin) {
           setError("Necessário ser administrador para criar usuários");
+        } else {
+          setIsAdmin(true);
         }
-
-        setIsAdmin(true);
       } else {
         Swal.fire({
           icon: "error",

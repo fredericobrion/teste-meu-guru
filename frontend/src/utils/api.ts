@@ -1,5 +1,5 @@
 import axios, { AxiosError } from "axios";
-import { getTokenCookie, setTokenCookie } from "./cookieUtils";
+import { getTokenCookie } from "./cookieUtils";
 
 const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:3001";
 
@@ -32,9 +32,7 @@ export const login = async (email: string, password: string) => {
 
     const token = response.data.access_token;
 
-    setTokenCookie(token);
-
-    return;
+    return token;
   } catch (error) {
     if (error instanceof AxiosError && error.response) {
       if (error.response.data.errorMessage) {
