@@ -14,11 +14,12 @@ import { createUser } from "../../utils/api";
 import Swal from "sweetalert2";
 import { Token } from "../../types/token";
 import { useAppContext } from "../../context/context";
+import Loading from "../components/loading";
 
 export default function CreatePage() {
   const router = useRouter();
 
-  const { decoded } = useAppContext();
+  const { decoded, loading, setLoading } = useAppContext();
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -133,7 +134,9 @@ export default function CreatePage() {
     }
 
     try {
+      setLoading(true);
       await createUser(name, email, password, cpf, phone, admin);
+      setLoading(false);
 
       Swal.fire({
         icon: "success",
@@ -143,6 +146,8 @@ export default function CreatePage() {
 
       router.push("/users-list");
     } catch (error) {
+      setLoading(false);
+
       if (error instanceof Error) {
         setError(error.message);
       } else {
@@ -151,7 +156,9 @@ export default function CreatePage() {
     }
   };
 
-  return (
+  return loading ? (
+    <Loading />
+  ) : (
     <div className="container mx-auto">
       <form
         className="flex flex-col items-center mt-16"

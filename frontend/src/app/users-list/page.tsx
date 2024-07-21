@@ -12,11 +12,13 @@ import {
 } from "@heroicons/react/24/outline";
 import Swal from "sweetalert2";
 import { useAppContext } from '../../context/context';
+import Loading from "../components/loading";
+
 
 export default function UsersListPage() {
   const router = useRouter();
 
-  const { decoded } = useAppContext();
+  const { decoded, loading, setLoading } = useAppContext();
 
   const [usersData, setUsersData] = useState<User[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -36,6 +38,7 @@ export default function UsersListPage() {
           const response = await fetchUserData();
           setTotalUsers(response.total);
           setUsersData(response.data);
+          setLoading(false);
         } catch (error) {
           console.error(error);
         }
@@ -51,8 +54,11 @@ export default function UsersListPage() {
             router.push("/");
           }
         });
-
-        setTimeout(() => router.push("/"), 2000);
+        
+        setTimeout(() => {
+          setLoading(false);
+          router.push("/");
+        }, 2000);
       }
     };
 
@@ -84,7 +90,7 @@ export default function UsersListPage() {
     );
   };
 
-  return (
+  return loading ? <Loading /> : (
     <div className="container mx-auto p-4">
       <div className="flex flex-col items-center mb-4">
         <h2 className="text-2xl font-semibold mb-4">Lista de usuários</h2>

@@ -5,14 +5,15 @@ import { useRouter } from "next/navigation";
 import { removeTokenCookie, setTokenCookie } from "../utils/cookieUtils";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { validateEmail } from "../utils/validateInputs";
-import { useAppContext } from '../context/context';
-import { jwtDecode } from 'jwt-decode';
+import { useAppContext } from "../context/context";
+import { jwtDecode } from "jwt-decode";
 import { Token } from "../types/token";
+import Loading from "./components/loading";
 
 export default function Home() {
   const router = useRouter();
 
-  const { setDecoded } = useAppContext();
+  const { setDecoded, loading, setLoading } = useAppContext();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,10 +26,10 @@ export default function Home() {
     const cleanCookie = () => {
       removeTokenCookie();
       setDecoded(null);
-    }
+    };
 
     cleanCookie();
-  }, [])
+  }, []);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -63,26 +64,27 @@ export default function Home() {
     if (!validEmail || !validPassword) {
       return;
     }
-    
+
     try {
+      setLoading(true);
       const token = await login(email, password);
 
       setTokenCookie(token);
       const decodedToken = jwtDecode(token) as Token;
 
       setDecoded(decodedToken);
-      
       router.push("/users-list");
     } catch (error) {
+      setLoading(false);
       if (error instanceof Error) {
-        setLoginError(error.message)
+        setLoginError(error.message);
       } else {
-        setLoginError("Ocorreu um erro inesperado.")
+        setLoginError("Ocorreu um erro inesperado.");
       }
     }
   };
 
-  return (
+  return loading ? <Loading /> : (
     <div className="container mx-auto">
       <form
         className="flex flex-col items-center mt-16"
