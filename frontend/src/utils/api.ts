@@ -72,6 +72,7 @@ export const createUser = async (
       phone,
       isAdmin,
     });
+    console.log(response.data);
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError && error.response) {

@@ -9,6 +9,7 @@ import { useAppContext } from "../context/context";
 import { jwtDecode } from "jwt-decode";
 import { Token } from "../types/token";
 import Loading from "./components/loading";
+import Header from "./components/header";
 
 export default function Home() {
   const router = useRouter();
@@ -70,9 +71,10 @@ export default function Home() {
       const token = await login(email, password);
 
       setTokenCookie(token);
-      const decodedToken = jwtDecode(token) as Token;
 
+      const decodedToken = jwtDecode(token) as Token;
       setDecoded(decodedToken);
+
       router.push("/users-list");
     } catch (error) {
       setLoading(false);
@@ -85,6 +87,9 @@ export default function Home() {
   };
 
   return loading ? <Loading /> : (
+    <div>
+      <Header />
+
     <div className="container mx-auto">
       <form
         className="flex flex-col items-center mt-16"
@@ -131,5 +136,7 @@ export default function Home() {
         {loginError && <p className="text-red-600 my-4">{loginError}</p>}
       </form>
     </div>
+    </div>
+
   );
 }

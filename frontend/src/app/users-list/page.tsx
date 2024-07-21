@@ -13,6 +13,7 @@ import {
 import Swal from "sweetalert2";
 import { useAppContext } from '../../context/context';
 import Loading from "../components/loading";
+import Header from '../components/header';
 
 
 export default function UsersListPage() {
@@ -94,6 +95,8 @@ export default function UsersListPage() {
   };
 
   return loading ? <Loading /> : (
+    <div>
+      <Header />
     <div className="container mx-auto p-4">
       <div className="flex flex-col items-center mb-4">
         <h2 className="text-2xl font-semibold mb-4">Lista de usuários</h2>
@@ -215,6 +218,7 @@ export default function UsersListPage() {
       {error && (
         <p>{error}</p>
       )}
+    </div>
     </div>
   );
 }

@@ -1,29 +1,57 @@
-import { vi, describe, expect, it } from "vitest";
+import { vi, describe, expect, it, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import Home from "../app/page";
 import userEvent from "@testing-library/user-event";
-import { login } from "../utils/api";
-import { setTokenCookie, removeTokenCookie } from "../utils/cookieUtils";
-import { useRouter } from "next/router";
+import { useAppContext, AppWrapper } from "../context/context";
+import { usePathname } from "next/navigation";
 
 vi.mock("../utils/api", () => ({
   login: vi.fn(),
 }));
 
 vi.mock("../utils/cookieUtils", () => ({
+  getTokenCookie: vi.fn(),
   setTokenCookie: vi.fn(),
   removeTokenCookie: vi.fn(),
 }));
 
 vi.mock("next/navigation", () => ({
-  useRouter: () => ({
-    push: vi.fn(),
-  }),
+  useRouter: vi.fn(),
+  usePathname: vi.fn()
 }));
 
+vi.mock("../context/context", async (importOriginal) => {
+  const actual = await importOriginal();
+  if (typeof actual === "object" && actual !== null) {
+    return {
+      ...actual,
+      useAppContext: vi.fn(),
+    };
+  }
+  return {
+    useAppContext: vi.fn(),
+  };
+});
+
 describe("Home Page", () => {
+  beforeEach(() => {
+    vi.mocked(useAppContext).mockReturnValue({
+      setDecoded: vi.fn(),
+      loading: false,
+      decoded: null,
+      setLoading: vi.fn(),
+    });
+    vi.clearAllMocks();
+    vi.mocked(usePathname).mockResolvedValue('/')
+  });
+
   it("should render email and password input and login button", () => {
-    render(<Home />);
+
+    render(
+      <AppWrapper>
+        <Home />
+      </AppWrapper>
+    );
 
     const emailInput = screen.getByPlaceholderText("E-mail");
     const passwordInput = screen.getByPlaceholderText("Senha");
@@ -35,7 +63,11 @@ describe("Home Page", () => {
   });
 
   it("should show email error message when email is invalid", async () => {
-    render(<Home />);
+    render(
+      <AppWrapper>
+        <Home />
+      </AppWrapper>
+    );
 
     const emailInput = screen.getByPlaceholderText("E-mail");
     const submitButton = screen.getByRole("button", { name: /entrar/i });
@@ -48,7 +80,11 @@ describe("Home Page", () => {
   });
 
   it("should show password error message when password is less than 6 characters", async () => {
-    render(<Home />);
+    render(
+      <AppWrapper>
+        <Home />
+      </AppWrapper>
+    );
 
     const emailInput = screen.getByPlaceholderText("E-mail");
     const passwordInput = screen.getByPlaceholderText("Senha");
@@ -66,42 +102,18 @@ describe("Home Page", () => {
     });
   });
 
-  it.skip("should submit the form and redirect on successful login", async () => {
-    // (login as vi.Mock).mockResolvedValueOnce();
-    const mockLogin = vi.mocked(login);
-    mockLogin.mockResolvedValueOnce();
-
-    render(<Home />);
-
-    const email = 'test@example.com';
-    const password = 'password123';
-
-    
-    const emailInput = screen.getByPlaceholderText("E-mail");
-    const passwordInput = screen.getByPlaceholderText("Senha");
-    const submitButton = screen.getByRole("button", { name: /entrar/i });
-    
-    await userEvent.type(emailInput, email);
-    await userEvent.type(passwordInput, password);
-    await userEvent.click(submitButton);
-
-    await waitFor(() => {
-      expect(login).toHaveBeenCalledWith(email, password);
-      expect(setTokenCookie).toHaveBeenCalled();
-      expect(useRouter().push).toHaveBeenCalledWith("/users-list");
-    });
-  });
-
   it("should display and hide the password correctly", async () => {
-    render(<Home />);
+    render(
+      <AppWrapper>
+        <Home />
+      </AppWrapper>
+    );
 
     const passwordInput = screen.getByPlaceholderText("Senha");
     const toggleButton = screen.getByTestId("toggleBtn");
 
-    // Initial state
     expect(passwordInput.getAttribute("type")).toBe("password");
 
-    // Toggle visibility
     await userEvent.click(toggleButton);
     expect(passwordInput.getAttribute("type")).toBe("text");
 

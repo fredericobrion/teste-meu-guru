@@ -1,6 +1,3 @@
-const cpf = "123.456.587-45";
-const phone = "(33) 98657-9878";
-
 export const usersList = [
   {
     id: 1,

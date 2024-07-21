@@ -1,11 +1,8 @@
 "use client";
 import { usePathname, useRouter } from "next/navigation";
-import { jwtDecode } from "jwt-decode";
-import { removeTokenCookie, getTokenCookie } from "../../../utils/cookieUtils";
-import { useEffect, useState } from "react";
+import { removeTokenCookie } from "../../../utils/cookieUtils";
 import logo from '../../../../public/logo.png';
 import Image from "next/image";
-import { Token } from '../../../types/token';
 import { useAppContext } from '../../../context/context';
 
 function Header() {
@@ -38,7 +35,7 @@ function Header() {
         </div>
       )}
       <div className="flex-grow flex justify-center">
-        <Image src={logo} alt="Logo Meu Guru" className="max-h-44 max-w-44" />
+        <Image src={logo} alt="Logo Meu Guru" width={160} height={120}/>
       </div>
       <div className="flex space-x-2">
         {pathname !== "/" && decoded && (
